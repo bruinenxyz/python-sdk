@@ -1,55 +1,20 @@
+# Getting started
 
-Steps taken
-Create a virtual environment
-Install openAPI generator from https://github.com/openapi-generators/openapi-python-client:
+Currently only supports a single decorator method, `confirm_action`.
 
-pip install openapi-python-client
+See `confirm_example.py` for example usage.
 
-For tab completion:
+Supported values for `delivery_channel`: `email`, `sms`, `magic-link`
 
-openapi-python-client --install-completion
+`email` - expected `delivery_address` to be a full email
+`sms` - expects `delivery_address` to be a full phone number, beginning with `+1` or whatever the country code is.
+`magic-link` - does not require a delivery_address. It will call `on_magic_link` callback if provided, with a dict containing `magicLinkUrl, confirmationId, delivered`
 
-Generate the SDK from the OpenAPI specs (delete the previous bruinen-api-client folder if it exists):
+Decorating a function will `confirm_action` will prevent it from being run until the user has confirmed the action. There is currently not timeout.
+If the user denies the action, the `on_rejected` function will be called. If the user accepts the action, the function will be called normally.
 
-openapi-python-client generate --path ./api-json
+### Configuration
+The library depends on two environment variables:
 
-OR
-
-openapi-python-client generate --url http://localhost:3000/api-json
-
-Update the generated client.py file to include the following (changing to X-API-Key auth):
-
-```python
-@attr.s(auto_attribs=True)
-class AuthenticatedClient(Client):
-    """A Client which has been authenticated for use on secured endpoints"""
-
-    token: str
-    prefix: str = ""
-    auth_header_name: str = "X-API-Key"
-
-    def get_headers(self) -> Dict[str, str]:
-        """Get headers to be used in authenticated endpoints"""
-        auth_header_value = f"{self.prefix} {self.token}" if self.prefix else self.token
-        return {self.auth_header_name: auth_header_value, **self.headers}
-```
-
-Install the SDK with:
-
-pip install ./bruinen-api-client
-
-
-
-
-Things to update:
-Add a config file that overrides the class names
-* Talk to Tevon about what these should look like
-(remove the controller name)
-* See if there's any additional structure that we need to add in — e.g., folders, etc.
-* Do some testing to make sure that everything actually works 
-
-
-
-
-Look at nestjs documentation for how nest auto-generates the name of each
-Remove non-public API endpoints from the OpenAPI schema
+`BRUINEN_API_KEY`: your Bruinen API key for accessing the API
+`BRUINEN_API_URL`: the base URL for the Bruinen server you will be using
