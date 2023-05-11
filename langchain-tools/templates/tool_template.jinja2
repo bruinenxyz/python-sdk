@@ -1,0 +1,10 @@
+# controller_template.jinja2
+
+class {{ controller_name }}:
+    {% for method_name, method_def in methods.items() %}
+    def {{ method_name }}(self{% for param in method_def.parameters %}, {{ param.name }}{% endfor %}):
+        # Method implementation goes here
+        pass
+    {% endfor %}
+
+    

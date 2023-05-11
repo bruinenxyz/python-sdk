@@ -1,0 +1,1557 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedUserDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "UsersController_findUserFromToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedUserDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/find-or-create": {
+      "post": {
+        "operationId": "UsersController_findOrCreateUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindOrCreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedUserDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/byId/{id}": {
+      "get": {
+        "operationId": "UsersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedUserDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/all": {
+      "get": {
+        "operationId": "UsersController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReturnedUserDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "patch": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedUserDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "UsersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/{id}": {
+      "get": {
+        "operationId": "AccountsController_getAccount",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The id of the account",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedAccountDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "AccountsController_updateAccount",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The id of the account",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedAccountDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/user/{userId}": {
+      "get": {
+        "operationId": "AccountsController_findAllAccountsForUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the user",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReturnedAccountDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/{userId}": {
+      "get": {
+        "operationId": "AuthController_getUserAuthToken",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "Id of user attempting to log in",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Auth"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "delete": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/clients": {
+      "post": {
+        "operationId": "ClientsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedClientDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "ClientsController_findOne",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedClientDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/clerkWebhook": {
+      "post": {
+        "operationId": "ClientsController_clerkWebhook",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/byId/{id}": {
+      "get": {
+        "operationId": "ClientsController_findById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The id of the client",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedClientDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/api-key": {
+      "get": {
+        "operationId": "ClientsController_getApiKey",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/clients/{id}": {
+      "patch": {
+        "operationId": "ClientsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The id of the client",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedClientDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "ClientsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The id of the client",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connection-requests": {
+      "post": {
+        "operationId": "ConnectionRequestsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateConnectionRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedConnectionRequestDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "ConnectionRequestsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connection-requests/byId/{id}": {
+      "get": {
+        "operationId": "ConnectionRequestsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The id of the connection request",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connection-requests/{id}": {
+      "patch": {
+        "operationId": "ConnectionRequestsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The id of the connection request",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConnectionRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "ConnectionRequestsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The id of the connection request",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/email/request": {
+      "post": {
+        "operationId": "EmailController_requestVerificationEmail",
+        "parameters": [
+          {
+            "name": "email",
+            "required": true,
+            "in": "query",
+            "description": "Email used to attempt user registration",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/email/verify": {
+      "get": {
+        "operationId": "EmailController_verifyEmail",
+        "parameters": [
+          {
+            "name": "is_pr",
+            "required": true,
+            "in": "query",
+            "description": "",
+            "schema": {}
+          },
+          {
+            "name": "code",
+            "required": true,
+            "in": "query",
+            "description": "",
+            "schema": {}
+          },
+          {
+            "name": "email",
+            "required": true,
+            "in": "query",
+            "description": "",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/account-policies": {
+      "post": {
+        "operationId": "AccountPoliciesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccountPolicyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/account-policies/byId/{id}": {
+      "get": {
+        "operationId": "AccountPoliciesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The id of the account policy",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedAccountPolicyDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account-policies/{id}": {
+      "patch": {
+        "operationId": "AccountPoliciesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The id of the account policy",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAccountPolicyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnedAccountPolicyDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sources/metadata": {
+      "get": {
+        "operationId": "SourcesController_getMetadata",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/sse/auth": {
+      "get": {
+        "operationId": "SseController_authEvent",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usage/all": {
+      "get": {
+        "operationId": "UsageController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usage/client-data": {
+      "get": {
+        "operationId": "UsageController_getClientData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientUsageData"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usage/byId/{id}": {
+      "get": {
+        "operationId": "UsageController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/confirm": {
+      "post": {
+        "operationId": "ConfirmController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateConfirmDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/confirm/{id}": {
+      "get": {
+        "operationId": "ConfirmController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "ConfirmController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConfirmDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "ConfirmController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/confirm/callback/{id}": {
+      "get": {
+        "operationId": "ConfirmController_callback",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "info": {
+    "title": "Bruinen API",
+    "description": "The API for bruinen",
+    "version": "1.0",
+    "contact": {
+      "name": "Bruinen",
+      "url": "https://bruinen.xyz",
+      "email": "info@bruinen.xyz"
+    }
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "externalId": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "accounts": {
+            "type": "object"
+          },
+          "client": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "clientId",
+          "accounts",
+          "client"
+        ]
+      },
+      "ReturnedUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "accounts": {
+            "type": "object"
+          },
+          "client": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "clientId",
+          "accounts",
+          "client"
+        ]
+      },
+      "FindOrCreateUserDto": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "externalId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "clientId"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "externalId": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "accounts": {
+            "type": "object"
+          },
+          "client": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "accounts",
+          "client"
+        ]
+      },
+      "SourceType": {
+        "type": "string",
+        "enum": [
+          "twitter",
+          "ethereum",
+          "polygon",
+          "facebook",
+          "linkedin",
+          "github",
+          "email",
+          "spotify",
+          "stackoverflow",
+          "discord",
+          "dunkin",
+          "venmo",
+          "shopify",
+          "cashapp",
+          "gmail",
+          "gcalendar",
+          "amazon",
+          "google"
+        ]
+      },
+      "AccountStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "inactive",
+          "pending",
+          "removed"
+        ]
+      },
+      "ReturnedAccountDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "externalAccountId": {
+            "type": "string"
+          },
+          "connectionRequestId": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceType"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AccountStatus"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "sourcePolicyId": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "authUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "connectionRequestId",
+          "source",
+          "status",
+          "userId",
+          "sourcePolicyId",
+          "clientId"
+        ]
+      },
+      "Auth": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      },
+      "CreateClientDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "clerkId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ClientStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "removed"
+        ]
+      },
+      "ReturnedClientDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "clerkId": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ClientStatus"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "status"
+        ]
+      },
+      "UpdateClientDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "clerkId": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ClientStatus"
+          }
+        },
+        "required": [
+          "name",
+          "status"
+        ]
+      },
+      "CreateConnectionRequestDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "sourcePolicyId": {
+            "type": "string"
+          },
+          "source": {
+            "type": "object"
+          },
+          "redirect": {
+            "type": "string"
+          },
+          "login": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "userId",
+          "clientId",
+          "source",
+          "redirect"
+        ]
+      },
+      "ReturnedConnectionRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "redirect": {
+            "type": "string"
+          },
+          "source": {
+            "type": "object"
+          },
+          "status": {
+            "type": "string"
+          },
+          "authUrl": {
+            "type": "string"
+          },
+          "accountId": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "sourcePolicyId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "status",
+          "clientId",
+          "userId",
+          "sourcePolicyId"
+        ]
+      },
+      "UpdateConnectionRequestDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateAccountPolicyDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "accountId": {
+            "type": "string"
+          },
+          "source": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "userId",
+          "accountId",
+          "source"
+        ]
+      },
+      "AccountPolicyStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "revoked"
+        ]
+      },
+      "ReturnedAccountPolicyDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceType"
+          },
+          "allowed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "allowAll": {
+            "type": "boolean"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AccountPolicyStatus"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "accountId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "allowed",
+          "allowAll",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "accountId",
+          "userId"
+        ]
+      },
+      "UpdateAccountPolicyDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "accountId": {
+            "type": "string"
+          },
+          "source": {
+            "type": "object"
+          }
+        }
+      },
+      "EndpointData": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "totalRequests": {
+            "type": "number"
+          },
+          "totalSuccesses": {
+            "type": "number"
+          },
+          "totalFailures": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "endpoint",
+          "totalRequests",
+          "totalSuccesses",
+          "totalFailures"
+        ]
+      },
+      "SourceData": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "totalRequests": {
+            "type": "number"
+          },
+          "totalSuccesses": {
+            "type": "number"
+          },
+          "totalFailures": {
+            "type": "number"
+          },
+          "endpointData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EndpointData"
+            }
+          }
+        },
+        "required": [
+          "source",
+          "totalRequests",
+          "totalSuccesses",
+          "totalFailures",
+          "endpointData"
+        ]
+      },
+      "ClientUsageData": {
+        "type": "object",
+        "properties": {
+          "totalRequests": {
+            "type": "number"
+          },
+          "totalSuccesses": {
+            "type": "number"
+          },
+          "totalFailures": {
+            "type": "number"
+          },
+          "uniqueUsers": {
+            "type": "number"
+          },
+          "sourceData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SourceData"
+            }
+          }
+        },
+        "required": [
+          "totalRequests",
+          "totalSuccesses",
+          "totalFailures",
+          "uniqueUsers",
+          "sourceData"
+        ]
+      },
+      "CreateConfirmDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "deliveryChannel": {
+            "type": "string"
+          },
+          "deliveryAddress": {
+            "type": "string"
+          },
+          "params": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "action",
+          "deliveryChannel"
+        ]
+      },
+      "UpdateConfirmDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "deliveryChannel": {
+            "type": "string"
+          },
+          "deliveryAddress": {
+            "type": "string"
+          },
+          "params": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}
