@@ -42,7 +42,7 @@ class CreateSourcePolicyDto:
         d = src_dict.copy()
         source = SourceType(d.pop("source"))
 
-        default = d.pop("default", UNSET)
+        default = d.pop("default", UNSET) or UNSET
 
         create_source_policy_dto = cls(
             source=source,

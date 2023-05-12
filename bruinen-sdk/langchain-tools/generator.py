@@ -1,22 +1,22 @@
 from jinja2 import Template
 
 # Load the template from the file
-with open('templates/tool_template.jinja2') as f:
+with open("templates/tool_template.jinja2") as f:
     template = Template(f.read())
 
 # Define the data to use in the template
 data = {
-    'controller_name': 'MyController',
-    'methods': {
-        'get': {
-            'parameters': [
-                {'name': 'id', 'type': 'str'},
+    "controller_name": "MyController",
+    "methods": {
+        "get": {
+            "parameters": [
+                {"name": "id", "type": "str"},
             ],
         },
-        'put': {
-            'parameters': [
-                {'name': 'id', 'type': 'str'},
-                {'name': 'data', 'type': 'dict'},
+        "put": {
+            "parameters": [
+                {"name": "id", "type": "str"},
+                {"name": "data", "type": "dict"},
             ],
         },
     },
@@ -27,11 +27,6 @@ result = template.render(data)
 
 # Print the result
 print(result)
-
-
-
-
-
 
 
 # Notes on tools
@@ -65,4 +60,4 @@ print(result)
 
 # For the interim, we should do this where the SDK and the langchain tool generator are generated separately
 #   The SDK will be generated from the OpenAPI spec
-#   The langchain tool generator will be generated from the source repo 
+#   The langchain tool generator will be generated from the source repo

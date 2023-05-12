@@ -46,7 +46,7 @@ class CreateConfirmReturnedDto:
 
         confirmation_id = d.pop("confirmationId")
 
-        magic_link = d.pop("magicLink", UNSET)
+        magic_link = d.pop("magicLink", UNSET) or UNSET
 
         create_confirm_returned_dto = cls(
             delivered=delivered,

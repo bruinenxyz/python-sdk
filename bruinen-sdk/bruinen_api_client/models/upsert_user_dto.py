@@ -55,13 +55,13 @@ class UpsertUserDto:
         d = src_dict.copy()
         client_id = d.pop("clientId")
 
-        email = d.pop("email", UNSET)
+        email = d.pop("email", UNSET) or UNSET
 
-        external_id = d.pop("externalId", UNSET)
+        external_id = d.pop("externalId", UNSET) or UNSET
 
-        first_name = d.pop("firstName", UNSET)
+        first_name = d.pop("firstName", UNSET) or UNSET
 
-        last_name = d.pop("lastName", UNSET)
+        last_name = d.pop("lastName", UNSET) or UNSET
 
         upsert_user_dto = cls(
             client_id=client_id,

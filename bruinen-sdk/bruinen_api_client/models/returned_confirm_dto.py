@@ -97,23 +97,23 @@ class ReturnedConfirmDto:
 
         delivery_channel = d.pop("deliveryChannel")
 
-        delivery_address = d.pop("deliveryAddress", UNSET)
+        delivery_address = d.pop("deliveryAddress", UNSET) or UNSET
 
-        _used_at = d.pop("usedAt", UNSET)
+        _used_at = d.pop("usedAt", UNSET) or UNSET
         used_at: Union[Unset, datetime.datetime]
         if isinstance(_used_at, Unset):
             used_at = UNSET
         else:
             used_at = isoparse(_used_at)
 
-        _responded_at = d.pop("respondedAt", UNSET)
+        _responded_at = d.pop("respondedAt", UNSET) or UNSET
         responded_at: Union[Unset, datetime.datetime]
         if isinstance(_responded_at, Unset):
             responded_at = UNSET
         else:
             responded_at = isoparse(_responded_at)
 
-        _params = d.pop("params", UNSET)
+        _params = d.pop("params", UNSET) or UNSET
         params: Union[Unset, ReturnedConfirmDtoParams]
         if isinstance(_params, Unset):
             params = UNSET

@@ -65,9 +65,9 @@ class CreateConfirmDto:
 
         delivery_channel = d.pop("deliveryChannel")
 
-        delivery_address = d.pop("deliveryAddress", UNSET)
+        delivery_address = d.pop("deliveryAddress", UNSET) or UNSET
 
-        _params = d.pop("params", UNSET)
+        _params = d.pop("params", UNSET) or UNSET
         params: Union[Unset, CreateConfirmDtoParams]
         if isinstance(_params, Unset):
             params = UNSET

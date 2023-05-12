@@ -87,11 +87,11 @@ class ReturnedConnectionRequestDto:
 
         source_policy_id = d.pop("sourcePolicyId")
 
-        redirect = d.pop("redirect", UNSET)
+        redirect = d.pop("redirect", UNSET) or UNSET
 
-        auth_url = d.pop("authUrl", UNSET)
+        auth_url = d.pop("authUrl", UNSET) or UNSET
 
-        account_id = d.pop("accountId", UNSET)
+        account_id = d.pop("accountId", UNSET) or UNSET
 
         returned_connection_request_dto = cls(
             id=id,

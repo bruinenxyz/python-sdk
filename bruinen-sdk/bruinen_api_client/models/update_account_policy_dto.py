@@ -49,11 +49,11 @@ class UpdateAccountPolicyDto:
         from ..models.update_account_policy_dto_source import UpdateAccountPolicyDtoSource
 
         d = src_dict.copy()
-        user_id = d.pop("userId", UNSET)
+        user_id = d.pop("userId", UNSET) or UNSET
 
-        account_id = d.pop("accountId", UNSET)
+        account_id = d.pop("accountId", UNSET) or UNSET
 
-        _source = d.pop("source", UNSET)
+        _source = d.pop("source", UNSET) or UNSET
         source: Union[Unset, UpdateAccountPolicyDtoSource]
         if isinstance(_source, Unset):
             source = UNSET

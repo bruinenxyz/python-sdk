@@ -77,13 +77,13 @@ class CreateUserDto:
 
         client = CreateUserDtoClient.from_dict(d.pop("client"))
 
-        external_id = d.pop("externalId", UNSET)
+        external_id = d.pop("externalId", UNSET) or UNSET
 
-        first_name = d.pop("firstName", UNSET)
+        first_name = d.pop("firstName", UNSET) or UNSET
 
-        last_name = d.pop("lastName", UNSET)
+        last_name = d.pop("lastName", UNSET) or UNSET
 
-        email = d.pop("email", UNSET)
+        email = d.pop("email", UNSET) or UNSET
 
         create_user_dto = cls(
             client_id=client_id,

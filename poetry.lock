@@ -131,7 +131,7 @@ typer = "^0.6 || ^0.7.0"
 type = "git"
 url = "https://github.com/bruinenxyz/openapi-python-client.git"
 reference = "HEAD"
-resolved_reference = "1f7174fb16309d3e1781d27dda93f42a6065ecea"
+resolved_reference = "94c2d2020462ccf07941027a1bdfb9ca0fc37a1c"
 
 [[package]]
 name = "certifi"

@@ -70,9 +70,9 @@ class CreateConnectionRequestDto:
 
         redirect = d.pop("redirect")
 
-        source_policy_id = d.pop("sourcePolicyId", UNSET)
+        source_policy_id = d.pop("sourcePolicyId", UNSET) or UNSET
 
-        login = d.pop("login", UNSET)
+        login = d.pop("login", UNSET) or UNSET
 
         create_connection_request_dto = cls(
             user_id=user_id,

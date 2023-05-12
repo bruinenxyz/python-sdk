@@ -85,9 +85,9 @@ class ReturnedAccountDto:
 
         client_id = d.pop("clientId")
 
-        external_account_id = d.pop("externalAccountId", UNSET)
+        external_account_id = d.pop("externalAccountId", UNSET) or UNSET
 
-        auth_url = d.pop("authUrl", UNSET)
+        auth_url = d.pop("authUrl", UNSET) or UNSET
 
         returned_account_dto = cls(
             id=id,

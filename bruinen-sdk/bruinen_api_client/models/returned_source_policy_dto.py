@@ -96,9 +96,9 @@ class ReturnedSourcePolicyDto:
 
         client_id = d.pop("clientId")
 
-        name = d.pop("name", UNSET)
+        name = d.pop("name", UNSET) or UNSET
 
-        _auth_credential_provider = d.pop("authCredentialProvider", UNSET)
+        _auth_credential_provider = d.pop("authCredentialProvider", UNSET) or UNSET
         auth_credential_provider: Union[Unset, CredentialProvider]
         if isinstance(_auth_credential_provider, Unset):
             auth_credential_provider = UNSET
