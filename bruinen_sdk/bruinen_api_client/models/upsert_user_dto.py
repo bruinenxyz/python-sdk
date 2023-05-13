@@ -1,8 +1,12 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.upsert_user_dto_accounts import UpsertUserDtoAccounts
+
 
 T = TypeVar("T", bound="UpsertUserDto")
 
@@ -12,50 +16,57 @@ class UpsertUserDto:
     """
     Attributes:
         client_id (str):
-        email (Union[Unset, str]):
+        accounts (UpsertUserDtoAccounts):
         external_id (Union[Unset, str]):
         first_name (Union[Unset, str]):
         last_name (Union[Unset, str]):
+        email (Union[Unset, str]):
     """
 
     client_id: str
-    email: Union[Unset, str] = UNSET
+    accounts: "UpsertUserDtoAccounts"
     external_id: Union[Unset, str] = UNSET
     first_name: Union[Unset, str] = UNSET
     last_name: Union[Unset, str] = UNSET
+    email: Union[Unset, str] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         client_id = self.client_id
-        email = self.email
+        accounts = self.accounts.to_dict()
+
         external_id = self.external_id
         first_name = self.first_name
         last_name = self.last_name
+        email = self.email
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "clientId": client_id,
+                "accounts": accounts,
             }
         )
-        if email is not UNSET:
-            field_dict["email"] = email
         if external_id is not UNSET:
             field_dict["externalId"] = external_id
         if first_name is not UNSET:
             field_dict["firstName"] = first_name
         if last_name is not UNSET:
             field_dict["lastName"] = last_name
+        if email is not UNSET:
+            field_dict["email"] = email
 
         return field_dict
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.upsert_user_dto_accounts import UpsertUserDtoAccounts
+
         d = src_dict.copy()
         client_id = d.pop("clientId")
 
-        email = d.pop("email", UNSET) or UNSET
+        accounts = UpsertUserDtoAccounts.from_dict(d.pop("accounts"))
 
         external_id = d.pop("externalId", UNSET) or UNSET
 
@@ -63,12 +74,15 @@ class UpsertUserDto:
 
         last_name = d.pop("lastName", UNSET) or UNSET
 
+        email = d.pop("email", UNSET) or UNSET
+
         upsert_user_dto = cls(
             client_id=client_id,
-            email=email,
+            accounts=accounts,
             external_id=external_id,
             first_name=first_name,
             last_name=last_name,
+            email=email,
         )
 
         upsert_user_dto.additional_properties = d

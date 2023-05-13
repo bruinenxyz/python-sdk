@@ -6,7 +6,6 @@ from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.returned_user_dto_accounts import ReturnedUserDtoAccounts
-    from ..models.returned_user_dto_client import ReturnedUserDtoClient
 
 
 T = TypeVar("T", bound="ReturnedUserDto")
@@ -19,7 +18,6 @@ class ReturnedUserDto:
         id (str):
         client_id (str):
         accounts (ReturnedUserDtoAccounts):
-        client (ReturnedUserDtoClient):
         external_id (Union[Unset, str]):
         first_name (Union[Unset, str]):
         last_name (Union[Unset, str]):
@@ -29,7 +27,6 @@ class ReturnedUserDto:
     id: str
     client_id: str
     accounts: "ReturnedUserDtoAccounts"
-    client: "ReturnedUserDtoClient"
     external_id: Union[Unset, str] = UNSET
     first_name: Union[Unset, str] = UNSET
     last_name: Union[Unset, str] = UNSET
@@ -40,8 +37,6 @@ class ReturnedUserDto:
         id = self.id
         client_id = self.client_id
         accounts = self.accounts.to_dict()
-
-        client = self.client.to_dict()
 
         external_id = self.external_id
         first_name = self.first_name
@@ -55,7 +50,6 @@ class ReturnedUserDto:
                 "id": id,
                 "clientId": client_id,
                 "accounts": accounts,
-                "client": client,
             }
         )
         if external_id is not UNSET:
@@ -72,7 +66,6 @@ class ReturnedUserDto:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.returned_user_dto_accounts import ReturnedUserDtoAccounts
-        from ..models.returned_user_dto_client import ReturnedUserDtoClient
 
         d = src_dict.copy()
         id = d.pop("id")
@@ -80,8 +73,6 @@ class ReturnedUserDto:
         client_id = d.pop("clientId")
 
         accounts = ReturnedUserDtoAccounts.from_dict(d.pop("accounts"))
-
-        client = ReturnedUserDtoClient.from_dict(d.pop("client"))
 
         external_id = d.pop("externalId", UNSET) or UNSET
 
@@ -95,7 +86,6 @@ class ReturnedUserDto:
             id=id,
             client_id=client_id,
             accounts=accounts,
-            client=client,
             external_id=external_id,
             first_name=first_name,
             last_name=last_name,

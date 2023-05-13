@@ -11,8 +11,8 @@ bruinen-openapi-gen = {git = "https://github.com/bruinenxyz/openapi-python-clien
 bruinen-sdk = {path = "bruinen_sdk"}
 pendulum = "^2.1.2"
 langchain = "^0.0.167"
-python-dotenv = "^1.0.0"
 openai = "^0.27.6"
+python-dotenv = "^1.0.0"
 
 
 [build-system]

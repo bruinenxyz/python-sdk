@@ -6,7 +6,6 @@ from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.create_user_dto_accounts import CreateUserDtoAccounts
-    from ..models.create_user_dto_client import CreateUserDtoClient
 
 
 T = TypeVar("T", bound="CreateUserDto")
@@ -18,7 +17,6 @@ class CreateUserDto:
     Attributes:
         client_id (str):
         accounts (CreateUserDtoAccounts):
-        client (CreateUserDtoClient):
         external_id (Union[Unset, str]):
         first_name (Union[Unset, str]):
         last_name (Union[Unset, str]):
@@ -27,7 +25,6 @@ class CreateUserDto:
 
     client_id: str
     accounts: "CreateUserDtoAccounts"
-    client: "CreateUserDtoClient"
     external_id: Union[Unset, str] = UNSET
     first_name: Union[Unset, str] = UNSET
     last_name: Union[Unset, str] = UNSET
@@ -37,8 +34,6 @@ class CreateUserDto:
     def to_dict(self) -> Dict[str, Any]:
         client_id = self.client_id
         accounts = self.accounts.to_dict()
-
-        client = self.client.to_dict()
 
         external_id = self.external_id
         first_name = self.first_name
@@ -51,7 +46,6 @@ class CreateUserDto:
             {
                 "clientId": client_id,
                 "accounts": accounts,
-                "client": client,
             }
         )
         if external_id is not UNSET:
@@ -68,14 +62,11 @@ class CreateUserDto:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.create_user_dto_accounts import CreateUserDtoAccounts
-        from ..models.create_user_dto_client import CreateUserDtoClient
 
         d = src_dict.copy()
         client_id = d.pop("clientId")
 
         accounts = CreateUserDtoAccounts.from_dict(d.pop("accounts"))
-
-        client = CreateUserDtoClient.from_dict(d.pop("client"))
 
         external_id = d.pop("externalId", UNSET) or UNSET
 
@@ -88,7 +79,6 @@ class CreateUserDto:
         create_user_dto = cls(
             client_id=client_id,
             accounts=accounts,
-            client=client,
             external_id=external_id,
             first_name=first_name,
             last_name=last_name,
