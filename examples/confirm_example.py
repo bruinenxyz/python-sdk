@@ -1,3 +1,4 @@
+# from bruinen_sdk.confirm import confirm_action
 from bruinen_sdk.confirm.confirm import confirm_action
 
 
@@ -17,3 +18,6 @@ def test():
 
 
 test()
+# def test2():
+#     print("TEST 2")
+#     pendulum.now()
