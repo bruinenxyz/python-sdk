@@ -1,4 +1,4 @@
-from ..confirm import confirm_action
+from bruinen_sdk.confirm.confirm import confirm_action
 
 
 def on_reject():

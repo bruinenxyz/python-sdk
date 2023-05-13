@@ -134,6 +134,25 @@ reference = "HEAD"
 resolved_reference = "94c2d2020462ccf07941027a1bdfb9ca0fc37a1c"
 
 [[package]]
+name = "bruinen-sdk"
+version = "1.0"
+description = "A client library for accessing Bruinen API"
+category = "main"
+optional = false
+python-versions = "^3.8"
+files = []
+develop = false
+
+[package.dependencies]
+attrs = ">=21.3.0"
+httpx = ">=0.15.4,<0.25.0"
+python-dateutil = "^2.8.0"
+
+[package.source]
+type = "directory"
+url = "bruinen_sdk"
+
+[[package]]
 name = "certifi"
 version = "2023.5.7"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -592,4 +611,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "9172bf12048f261d40e3248bfd188e40376e195861652ec7b0df264083809295"
+content-hash = "d9ce177859e459a36a662ee9dbeec57c56fc7bf40f5a76aba841497b40930ea0"

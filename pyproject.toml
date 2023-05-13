@@ -9,6 +9,7 @@ packages = [{include = "python_sdk"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 bruinen-openapi-gen = {git = "https://github.com/bruinenxyz/openapi-python-client.git"}
+bruinen_sdk = {path = "bruinen_sdk"}
 
 
 [build-system]
