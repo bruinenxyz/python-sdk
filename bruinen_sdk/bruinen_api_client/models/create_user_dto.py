@@ -1,12 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from typing import Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
 from ..types import UNSET, Unset
-
-if TYPE_CHECKING:
-    from ..models.create_user_dto_accounts import CreateUserDtoAccounts
-
 
 T = TypeVar("T", bound="CreateUserDto")
 
@@ -15,16 +11,12 @@ T = TypeVar("T", bound="CreateUserDto")
 class CreateUserDto:
     """
     Attributes:
-        client_id (str):
-        accounts (CreateUserDtoAccounts):
         external_id (Union[Unset, str]):
         first_name (Union[Unset, str]):
         last_name (Union[Unset, str]):
         email (Union[Unset, str]):
     """
 
-    client_id: str
-    accounts: "CreateUserDtoAccounts"
     external_id: Union[Unset, str] = UNSET
     first_name: Union[Unset, str] = UNSET
     last_name: Union[Unset, str] = UNSET
@@ -32,9 +24,6 @@ class CreateUserDto:
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        client_id = self.client_id
-        accounts = self.accounts.to_dict()
-
         external_id = self.external_id
         first_name = self.first_name
         last_name = self.last_name
@@ -42,12 +31,7 @@ class CreateUserDto:
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update(
-            {
-                "clientId": client_id,
-                "accounts": accounts,
-            }
-        )
+        field_dict.update({})
         if external_id is not UNSET:
             field_dict["externalId"] = external_id
         if first_name is not UNSET:
@@ -61,13 +45,7 @@ class CreateUserDto:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.create_user_dto_accounts import CreateUserDtoAccounts
-
         d = src_dict.copy()
-        client_id = d.pop("clientId")
-
-        accounts = CreateUserDtoAccounts.from_dict(d.pop("accounts"))
-
         external_id = d.pop("externalId", UNSET) or UNSET
 
         first_name = d.pop("firstName", UNSET) or UNSET
@@ -77,8 +55,6 @@ class CreateUserDto:
         email = d.pop("email", UNSET) or UNSET
 
         create_user_dto = cls(
-            client_id=client_id,
-            accounts=accounts,
             external_id=external_id,
             first_name=first_name,
             last_name=last_name,

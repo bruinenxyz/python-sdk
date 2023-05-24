@@ -5,14 +5,14 @@ import httpx
 
 from ... import errors
 from ...client import Client
-from ...models.github_controller_repos_response_200 import GithubControllerReposResponse200
+from ...models.github_controller_repos_github_repo import GithubControllerReposGithubRepo
 from ...types import UNSET, Response
 
 
 def _get_kwargs(
     *,
     client: Client,
-    field_: Any,
+    account_id: str,
 ) -> Dict[str, Any]:
     url = "{}/sources/github/repos".format(client.base_url)
 
@@ -20,7 +20,7 @@ def _get_kwargs(
     cookies: Dict[str, Any] = client.get_cookies()
 
     params: Dict[str, Any] = {}
-    params[""] = field_
+    params["accountId"] = account_id
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -35,9 +35,9 @@ def _get_kwargs(
     }
 
 
-def _parse_response(*, client: Client, response: httpx.Response) -> Optional[GithubControllerReposResponse200]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[GithubControllerReposGithubRepo]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = GithubControllerReposResponse200.from_dict(response.json())
+        response_200 = GithubControllerReposGithubRepo.from_dict(response.json())
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -46,7 +46,7 @@ def _parse_response(*, client: Client, response: httpx.Response) -> Optional[Git
         return None
 
 
-def _build_response(*, client: Client, response: httpx.Response) -> Response[GithubControllerReposResponse200]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[GithubControllerReposGithubRepo]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -58,23 +58,23 @@ def _build_response(*, client: Client, response: httpx.Response) -> Response[Git
 def sync_detailed(
     *,
     client: Client,
-    field_: Any,
-) -> Response[GithubControllerReposResponse200]:
+    account_id: str,
+) -> Response[GithubControllerReposGithubRepo]:
     """
     Args:
-        field_ (Any):
+        account_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GithubControllerReposResponse200]
+        Response[GithubControllerReposGithubRepo]
     """
 
     kwargs = _get_kwargs(
         client=client,
-        field_=field_,
+        account_id=account_id,
     )
 
     response = httpx.request(
@@ -88,46 +88,46 @@ def sync_detailed(
 def sync(
     *,
     client: Client,
-    field_: Any,
-) -> Optional[GithubControllerReposResponse200]:
+    account_id: str,
+) -> Optional[GithubControllerReposGithubRepo]:
     """
     Args:
-        field_ (Any):
+        account_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GithubControllerReposResponse200
+        GithubControllerReposGithubRepo
     """
 
     return sync_detailed(
         client=client,
-        field_=field_,
+        account_id=account_id,
     ).parsed
 
 
 async def asyncio_detailed(
     *,
     client: Client,
-    field_: Any,
-) -> Response[GithubControllerReposResponse200]:
+    account_id: str,
+) -> Response[GithubControllerReposGithubRepo]:
     """
     Args:
-        field_ (Any):
+        account_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GithubControllerReposResponse200]
+        Response[GithubControllerReposGithubRepo]
     """
 
     kwargs = _get_kwargs(
         client=client,
-        field_=field_,
+        account_id=account_id,
     )
 
     async with httpx.AsyncClient(verify=client.verify_ssl) as _client:
@@ -139,23 +139,23 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Client,
-    field_: Any,
-) -> Optional[GithubControllerReposResponse200]:
+    account_id: str,
+) -> Optional[GithubControllerReposGithubRepo]:
     """
     Args:
-        field_ (Any):
+        account_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GithubControllerReposResponse200
+        GithubControllerReposGithubRepo
     """
 
     return (
         await asyncio_detailed(
             client=client,
-            field_=field_,
+            account_id=account_id,
         )
     ).parsed

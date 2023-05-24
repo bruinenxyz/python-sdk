@@ -5,24 +5,19 @@ import httpx
 
 from ... import errors
 from ...client import Client
-from ...models.github_controller_profile_github_profile import GithubControllerProfileGithubProfile
-from ...types import UNSET, Response
+from ...models.returned_source_policy_dto import ReturnedSourcePolicyDto
+from ...types import Response
 
 
 def _get_kwargs(
+    id: Any,
     *,
     client: Client,
-    account_id: str,
 ) -> Dict[str, Any]:
-    url = "{}/sources/github/profile".format(client.base_url)
+    url = "{}/source-policy/byId/{id}".format(client.base_url, id=id)
 
     headers: Dict[str, str] = client.get_headers()
     cookies: Dict[str, Any] = client.get_cookies()
-
-    params: Dict[str, Any] = {}
-    params["accountId"] = account_id
-
-    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
     return {
         "method": "get",
@@ -31,13 +26,12 @@ def _get_kwargs(
         "cookies": cookies,
         "timeout": client.get_timeout(),
         "follow_redirects": client.follow_redirects,
-        "params": params,
     }
 
 
-def _parse_response(*, client: Client, response: httpx.Response) -> Optional[GithubControllerProfileGithubProfile]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[ReturnedSourcePolicyDto]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = GithubControllerProfileGithubProfile.from_dict(response.json())
+        response_200 = ReturnedSourcePolicyDto.from_dict(response.json())
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -46,7 +40,7 @@ def _parse_response(*, client: Client, response: httpx.Response) -> Optional[Git
         return None
 
 
-def _build_response(*, client: Client, response: httpx.Response) -> Response[GithubControllerProfileGithubProfile]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[ReturnedSourcePolicyDto]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -56,25 +50,25 @@ def _build_response(*, client: Client, response: httpx.Response) -> Response[Git
 
 
 def sync_detailed(
+    id: Any,
     *,
     client: Client,
-    account_id: str,
-) -> Response[GithubControllerProfileGithubProfile]:
+) -> Response[ReturnedSourcePolicyDto]:
     """
     Args:
-        account_id (str):
+        id (Any):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GithubControllerProfileGithubProfile]
+        Response[ReturnedSourcePolicyDto]
     """
 
     kwargs = _get_kwargs(
+        id=id,
         client=client,
-        account_id=account_id,
     )
 
     response = httpx.request(
@@ -86,48 +80,48 @@ def sync_detailed(
 
 
 def sync(
+    id: Any,
     *,
     client: Client,
-    account_id: str,
-) -> Optional[GithubControllerProfileGithubProfile]:
+) -> Optional[ReturnedSourcePolicyDto]:
     """
     Args:
-        account_id (str):
+        id (Any):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GithubControllerProfileGithubProfile
+        ReturnedSourcePolicyDto
     """
 
     return sync_detailed(
+        id=id,
         client=client,
-        account_id=account_id,
     ).parsed
 
 
 async def asyncio_detailed(
+    id: Any,
     *,
     client: Client,
-    account_id: str,
-) -> Response[GithubControllerProfileGithubProfile]:
+) -> Response[ReturnedSourcePolicyDto]:
     """
     Args:
-        account_id (str):
+        id (Any):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GithubControllerProfileGithubProfile]
+        Response[ReturnedSourcePolicyDto]
     """
 
     kwargs = _get_kwargs(
+        id=id,
         client=client,
-        account_id=account_id,
     )
 
     async with httpx.AsyncClient(verify=client.verify_ssl) as _client:
@@ -137,25 +131,25 @@ async def asyncio_detailed(
 
 
 async def asyncio(
+    id: Any,
     *,
     client: Client,
-    account_id: str,
-) -> Optional[GithubControllerProfileGithubProfile]:
+) -> Optional[ReturnedSourcePolicyDto]:
     """
     Args:
-        account_id (str):
+        id (Any):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GithubControllerProfileGithubProfile
+        ReturnedSourcePolicyDto
     """
 
     return (
         await asyncio_detailed(
+            id=id,
             client=client,
-            account_id=account_id,
         )
     ).parsed

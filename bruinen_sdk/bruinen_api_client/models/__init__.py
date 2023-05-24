@@ -1,69 +1,77 @@
 """ Contains all the data models used in inputs/outputs """
 
 from .account_status import AccountStatus
+from .accounts_controller_deactivate_response_200 import AccountsControllerDeactivateResponse200
+from .accounts_controller_get_accounts_response_200_item import AccountsControllerGetAccountsResponse200Item
 from .auth import Auth
-from .client_status import ClientStatus
 from .client_usage_data import ClientUsageData
-from .clients_controller_clerk_webhook_response_201 import ClientsControllerClerkWebhookResponse201
-from .connection_requests_controller_find_one_response_200 import ConnectionRequestsControllerFindOneResponse200
-from .create_client_dto import CreateClientDto
+from .confirmation_status import ConfirmationStatus
+from .connection_requests_controller_find_all_response_200_item import (
+    ConnectionRequestsControllerFindAllResponse200Item,
+)
+from .create_confirm_dto import CreateConfirmDto
+from .create_confirm_dto_params import CreateConfirmDtoParams
+from .create_confirm_returned_dto import CreateConfirmReturnedDto
 from .create_connection_request_dto import CreateConnectionRequestDto
 from .create_connection_request_dto_source import CreateConnectionRequestDtoSource
 from .create_user_dto import CreateUserDto
-from .create_user_dto_accounts import CreateUserDtoAccounts
 from .credential_provider import CredentialProvider
 from .endpoint_data import EndpointData
-from .github_controller_profile_response_200 import GithubControllerProfileResponse200
-from .github_controller_repos_response_200 import GithubControllerReposResponse200
+from .get_response_200 import GetResponse200
+from .github_controller_profile_github_profile import GithubControllerProfileGithubProfile
+from .github_controller_repos_github_repo import GithubControllerReposGithubRepo
+from .github_controller_repos_github_repo_github_repo_owner import GithubControllerReposGithubRepoGithubRepoOwner
+from .github_controller_repos_github_repo_github_repo_permissions import (
+    GithubControllerReposGithubRepoGithubRepoPermissions,
+)
 from .returned_account_dto import ReturnedAccountDto
-from .returned_client_dto import ReturnedClientDto
+from .returned_confirm_dto import ReturnedConfirmDto
+from .returned_confirm_dto_params import ReturnedConfirmDtoParams
 from .returned_connection_request_dto import ReturnedConnectionRequestDto
 from .returned_connection_request_dto_source import ReturnedConnectionRequestDtoSource
 from .returned_source_policy_dto import ReturnedSourcePolicyDto
 from .returned_user_dto import ReturnedUserDto
-from .returned_user_dto_accounts import ReturnedUserDtoAccounts
 from .source_data import SourceData
 from .source_policy_status import SourcePolicyStatus
 from .source_type import SourceType
 from .sources_controller_get_metadata_for_source_response_200 import SourcesControllerGetMetadataForSourceResponse200
-from .sse_controller_auth_event_response_200 import SseControllerAuthEventResponse200
-from .update_client_dto import UpdateClientDto
-from .update_connection_request_dto import UpdateConnectionRequestDto
+from .update_user_dto import UpdateUserDto
 from .upsert_user_dto import UpsertUserDto
-from .upsert_user_dto_accounts import UpsertUserDtoAccounts
 from .usage_controller_find_all_response_200_item import UsageControllerFindAllResponse200Item
 
 __all__ = (
+    "AccountsControllerDeactivateResponse200",
+    "AccountsControllerGetAccountsResponse200Item",
     "AccountStatus",
     "Auth",
-    "ClientsControllerClerkWebhookResponse201",
-    "ClientStatus",
     "ClientUsageData",
-    "ConnectionRequestsControllerFindOneResponse200",
-    "CreateClientDto",
+    "ConfirmationStatus",
+    "ConnectionRequestsControllerFindAllResponse200Item",
+    "CreateConfirmDto",
+    "CreateConfirmDtoParams",
+    "CreateConfirmReturnedDto",
     "CreateConnectionRequestDto",
     "CreateConnectionRequestDtoSource",
     "CreateUserDto",
-    "CreateUserDtoAccounts",
     "CredentialProvider",
     "EndpointData",
-    "GithubControllerProfileResponse200",
-    "GithubControllerReposResponse200",
+    "GetResponse200",
+    "GithubControllerProfileGithubProfile",
+    "GithubControllerReposGithubRepo",
+    "GithubControllerReposGithubRepoGithubRepoOwner",
+    "GithubControllerReposGithubRepoGithubRepoPermissions",
     "ReturnedAccountDto",
-    "ReturnedClientDto",
+    "ReturnedConfirmDto",
+    "ReturnedConfirmDtoParams",
     "ReturnedConnectionRequestDto",
     "ReturnedConnectionRequestDtoSource",
     "ReturnedSourcePolicyDto",
     "ReturnedUserDto",
-    "ReturnedUserDtoAccounts",
     "SourceData",
     "SourcePolicyStatus",
     "SourcesControllerGetMetadataForSourceResponse200",
     "SourceType",
-    "SseControllerAuthEventResponse200",
-    "UpdateClientDto",
-    "UpdateConnectionRequestDto",
+    "UpdateUserDto",
     "UpsertUserDto",
-    "UpsertUserDtoAccounts",
     "UsageControllerFindAllResponse200Item",
 )
