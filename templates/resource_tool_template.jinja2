@@ -41,7 +41,7 @@ class {{ class_name }}(BaseTool):
         query: str,
         run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
-        '''Run the tool.'''
+        """Run the tool."""
         
         {% if has_parameters %}parser = PydanticOutputParser(pydantic_object={{ schema_name }})
         
