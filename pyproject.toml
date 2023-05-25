@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "python-sdk"
+version = "0.1.0"
+description = ""
+authors = ["Tevon <tevon@bruinen.co>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+bruinen-openapi-gen = {git = "https://github.com/bruinenxyz/openapi-python-client.git"}
+bruinen-sdk = {path = "bruinen_sdk"}
+pendulum = "^2.1.2"
+langchain = "^0.0.167"
+openai = "^0.27.6"
+python-dotenv = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
