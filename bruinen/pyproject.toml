@@ -6,13 +6,7 @@ description = "A client library for accessing Bruinen API"
 authors = []
 
 readme = "README.md"
-include = [
-    {path = "client"},
-    {path = "confirm"},
-    {path = "langchain"},
-    "CHANGELOG.md",
-    "client/py.typed",
-]
+
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -23,6 +17,16 @@ python-dateutil = "^2.8.0"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[build-system.package]
+include = [
+    "bruinen",
+    "bruinen.client",
+    "bruinen.confirm",
+    "bruinen.langchain",
+    "CHANGELOG.md",
+    "client/py.typed",
+]
 
 [tool.black]
 line-length = 120
