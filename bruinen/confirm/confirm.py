@@ -3,7 +3,7 @@ import os
 from functools import wraps
 from time import sleep
 
-from ..bruinen_api_client import AuthenticatedClient
+from ..client import AuthenticatedClient
 
 token = os.environ.get("BRUINEN_API_KEY")
 base_url = os.environ.get("BRUINEN_API_URL")
@@ -15,9 +15,9 @@ client = AuthenticatedClient(
     auth_header_name="X-API-Key",
 )
 
-from ..bruinen_api_client.api.confirm import create as confirm_create
-from ..bruinen_api_client.api.confirm import find_one as confirm_get
-from ..bruinen_api_client.models import CreateConfirmDto
+from ..client.api.confirm import create as confirm_create
+from ..client.api.confirm import find_one as confirm_get
+from ..client.models import CreateConfirmDto
 
 
 def confirm_action(

@@ -5,7 +5,7 @@ import httpx
 
 from ... import errors
 from ...client import Client
-from ...models.github_controller_repos_github_repo import GithubControllerReposGithubRepo
+from ...models.github_profile import GithubProfile
 from ...types import UNSET, Response
 
 
@@ -14,7 +14,7 @@ def _get_kwargs(
     client: Client,
     account_id: str,
 ) -> Dict[str, Any]:
-    url = "{}/sources/github/repos".format(client.base_url)
+    url = "{}/sources/github/profile".format(client.base_url)
 
     headers: Dict[str, str] = client.get_headers()
     cookies: Dict[str, Any] = client.get_cookies()
@@ -35,9 +35,9 @@ def _get_kwargs(
     }
 
 
-def _parse_response(*, client: Client, response: httpx.Response) -> Optional[GithubControllerReposGithubRepo]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[GithubProfile]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = GithubControllerReposGithubRepo.from_dict(response.json())
+        response_200 = GithubProfile.from_dict(response.json())
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -46,7 +46,7 @@ def _parse_response(*, client: Client, response: httpx.Response) -> Optional[Git
         return None
 
 
-def _build_response(*, client: Client, response: httpx.Response) -> Response[GithubControllerReposGithubRepo]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[GithubProfile]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -59,7 +59,7 @@ def sync_detailed(
     *,
     client: Client,
     account_id: str,
-) -> Response[GithubControllerReposGithubRepo]:
+) -> Response[GithubProfile]:
     """
     Args:
         account_id (str):
@@ -69,7 +69,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GithubControllerReposGithubRepo]
+        Response[GithubProfile]
     """
 
     kwargs = _get_kwargs(
@@ -89,7 +89,7 @@ def sync(
     *,
     client: Client,
     account_id: str,
-) -> Optional[GithubControllerReposGithubRepo]:
+) -> Optional[GithubProfile]:
     """
     Args:
         account_id (str):
@@ -99,7 +99,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GithubControllerReposGithubRepo
+        GithubProfile
     """
 
     return sync_detailed(
@@ -112,7 +112,7 @@ async def asyncio_detailed(
     *,
     client: Client,
     account_id: str,
-) -> Response[GithubControllerReposGithubRepo]:
+) -> Response[GithubProfile]:
     """
     Args:
         account_id (str):
@@ -122,7 +122,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GithubControllerReposGithubRepo]
+        Response[GithubProfile]
     """
 
     kwargs = _get_kwargs(
@@ -140,7 +140,7 @@ async def asyncio(
     *,
     client: Client,
     account_id: str,
-) -> Optional[GithubControllerReposGithubRepo]:
+) -> Optional[GithubProfile]:
     """
     Args:
         account_id (str):
@@ -150,7 +150,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GithubControllerReposGithubRepo
+        GithubProfile
     """
 
     return (

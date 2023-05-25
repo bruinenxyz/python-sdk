@@ -4,11 +4,11 @@ import attr
 
 from ..types import UNSET, Unset
 
-T = TypeVar("T", bound="GithubControllerProfileGithubProfile")
+T = TypeVar("T", bound="GithubProfile")
 
 
 @attr.s(auto_attribs=True)
-class GithubControllerProfileGithubProfile:
+class GithubProfile:
     """A github profile
 
     Attributes:
@@ -293,7 +293,7 @@ class GithubControllerProfileGithubProfile:
 
         two_factor_authentication = d.pop("two_factor_authentication", UNSET) or UNSET
 
-        github_controller_profile_github_profile = cls(
+        github_profile = cls(
             login=login,
             id=id,
             node_id=node_id,
@@ -334,8 +334,8 @@ class GithubControllerProfileGithubProfile:
             two_factor_authentication=two_factor_authentication,
         )
 
-        github_controller_profile_github_profile.additional_properties = d
-        return github_controller_profile_github_profile
+        github_profile.additional_properties = d
+        return github_profile
 
     @property
     def additional_keys(self) -> List[str]:

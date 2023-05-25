@@ -1,16 +1,18 @@
 [tool.poetry]
-name = "bruinen_sdk"
+name = "bruinen"
 version = "1.0"
 description = "A client library for accessing Bruinen API"
 
 authors = []
 
 readme = "README.md"
-packages = [
-    {include = "bruinen_api_client"},
-    {include = "confirm"},
+include = [
+    {path = "client"},
+    {path = "confirm"},
+    {path = "langchain"},
+    "CHANGELOG.md",
+    "client/py.typed",
 ]
-include = ["CHANGELOG.md", "bruinen_api_client/py.typed"]
 
 [tool.poetry.dependencies]
 python = "^3.8"

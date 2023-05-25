@@ -4,11 +4,11 @@ import attr
 
 from ..types import UNSET, Unset
 
-T = TypeVar("T", bound="GithubControllerReposGithubRepoGithubRepoPermissions")
+T = TypeVar("T", bound="GithubRepoPermissions")
 
 
 @attr.s(auto_attribs=True)
-class GithubControllerReposGithubRepoGithubRepoPermissions:
+class GithubRepoPermissions:
     """The permissions object for the repo
 
     Attributes:
@@ -62,7 +62,7 @@ class GithubControllerReposGithubRepoGithubRepoPermissions:
 
         pull = d.pop("pull", UNSET) or UNSET
 
-        github_controller_repos_github_repo_github_repo_permissions = cls(
+        github_repo_permissions = cls(
             admin=admin,
             maintain=maintain,
             push=push,
@@ -70,8 +70,8 @@ class GithubControllerReposGithubRepoGithubRepoPermissions:
             pull=pull,
         )
 
-        github_controller_repos_github_repo_github_repo_permissions.additional_properties = d
-        return github_controller_repos_github_repo_github_repo_permissions
+        github_repo_permissions.additional_properties = d
+        return github_repo_permissions
 
     @property
     def additional_keys(self) -> List[str]:
