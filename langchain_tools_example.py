@@ -9,8 +9,8 @@ bruinen_secret = os.getenv('BRUINEN_SECRET')
 from langchain.agents import initialize_agent
 from langchain.llms import OpenAI
 
-from bruinen_sdk.langchain_tools.github_test import GithubGetReposTool
-from bruinen_sdk.bruinen_api_client import AuthenticatedClient
+from bruinen.src.bruinen.langchain.github_test import GithubGetReposTool
+from bruinen.src.bruinen.client import AuthenticatedClient
 
 client = AuthenticatedClient(base_url='http://localhost:3000', token=bruinen_secret, prefix='', auth_header_name='X-API-Key')
 

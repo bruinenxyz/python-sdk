@@ -4,11 +4,11 @@ import attr
 
 from ..types import UNSET, Unset
 
-T = TypeVar("T", bound="GithubControllerReposGithubRepoGithubRepoOwner")
+T = TypeVar("T", bound="GithubRepoOwner")
 
 
 @attr.s(auto_attribs=True)
-class GithubControllerReposGithubRepoGithubRepoOwner:
+class GithubRepoOwner:
     """The owner of this github repo
 
     Attributes:
@@ -293,7 +293,7 @@ class GithubControllerReposGithubRepoGithubRepoOwner:
 
         two_factor_authentication = d.pop("two_factor_authentication", UNSET) or UNSET
 
-        github_controller_repos_github_repo_github_repo_owner = cls(
+        github_repo_owner = cls(
             login=login,
             id=id,
             node_id=node_id,
@@ -334,8 +334,8 @@ class GithubControllerReposGithubRepoGithubRepoOwner:
             two_factor_authentication=two_factor_authentication,
         )
 
-        github_controller_repos_github_repo_github_repo_owner.additional_properties = d
-        return github_controller_repos_github_repo_github_repo_owner
+        github_repo_owner.additional_properties = d
+        return github_repo_owner
 
     @property
     def additional_keys(self) -> List[str]:

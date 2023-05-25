@@ -8,10 +8,14 @@ from langchain.prompts.prompt import PromptTemplate
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from ..bruinen_api_client import AuthenticatedClient
-from ..bruinen_api_client.api.accounts import find_all_accounts_for_user
-from ..bruinen_api_client.models import ReturnedAccountDto
-from ..bruinen_api_client.types import Response
+from ..client import AuthenticatedClient
+from ..client.api.accounts import find_all_accounts_for_user
+from ..client.models import ReturnedAccountDto
+from ..client.types import Response
+
+# Import input models (there aren't any for this one)
+
+# Import the resource classes — in the generator we'll need to figure out how to include these names when there are multiple models
 
 
 # TODO switch to using the created SDK class
@@ -24,28 +28,29 @@ class GithubGetReposInputSchema(BaseModel):
 # class GithubGetReposOutputSchema(BaseModel):
 #   ...
 
+
 class GithubGetReposTool(BaseTool):
     name = "Github repos"
     # This is a description for any endpoint that has parameters created
-    description = """Gets a list of Github repos for a user.
-    
-    Input should be a string query with the requested parameters as key/value pairs, separated by commas.
-    Possible keys for the query are:
-    
-    "name": "string"
-    "private": "boolean"
+    # description = """Gets a list of Github repos for a user.
 
-    If no parameters are provided, pass an empty string as input.
-    
-    Output will be the text response from the Github API.
-    """
-    # This is a description for any resource that doesn't have parameters
-    # description = '''Gets a list of Github repos for a user.
+    # Input should be a string query with the requested parameters as key/value pairs, separated by commas.
+    # Possible keys for the query are:
 
-    # Input should be an empty string.
+    # "name": "string"
+    # "private": "boolean"
+
+    # If no parameters are provided, pass an empty string as input.
 
     # Output will be the text response from the Github API.
-    # '''
+    # """
+    # This is a description for any resource that doesn't have parameters
+    description = """Gets a list of Github repos for a user.
+
+    Input should be an empty string.
+
+    Output will be the text response from the Github API.
+    """
 
     llm: BaseLanguageModel
     user_id: str
@@ -66,7 +71,7 @@ class GithubGetReposTool(BaseTool):
 
         output = self.llm(_input.to_string())
         parser.parse(output)
-        
+
         # TODO pass the parsed output to the Bruinen call
 
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
@@ -75,7 +80,7 @@ class GithubGetReposTool(BaseTool):
         if not 200 <= response.status_code < 300:
             return "Error pulling the user's Github account."
         accounts: List["ReturnedAccountDto"] = response.parsed
-        
+
         account_id = ""
         for account in accounts:
             print(account.source)
@@ -86,16 +91,15 @@ class GithubGetReposTool(BaseTool):
             return "The user has not connected their Github account; you should try authenticating Github first."
         else:
             # User has authenticated Github, make the request
-            from ..bruinen_api_client.api.sources import github_controller_profile
-            from ..bruinen_api_client.models import GithubControllerProfileGithubProfile
+            from ..client.api.sources import github_controller_profile
+            from ..client.models import GithubProfile
 
-            response: Response[GithubControllerProfileGithubProfile] = github_controller_profile.sync_detailed(
-                client=self.client,
-                account_id=account_id
+            response: Response[GithubProfile] = github_controller_profile.sync_detailed(
+                client=self.client, account_id=account_id
             )
             if not 200 <= response.status_code < 300:
                 return "Error pulling the user's Github profile."
-            profile: GithubControllerProfileGithubProfile = response.parsed
+            profile = response.parsed
 
             return json.dumps(profile.to_dict())
 

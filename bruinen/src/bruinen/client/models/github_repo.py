@@ -5,19 +5,15 @@ import attr
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.github_controller_repos_github_repo_github_repo_owner import (
-        GithubControllerReposGithubRepoGithubRepoOwner,
-    )
-    from ..models.github_controller_repos_github_repo_github_repo_permissions import (
-        GithubControllerReposGithubRepoGithubRepoPermissions,
-    )
+    from ..models.github_repo_owner import GithubRepoOwner
+    from ..models.github_repo_permissions import GithubRepoPermissions
 
 
-T = TypeVar("T", bound="GithubControllerReposGithubRepo")
+T = TypeVar("T", bound="GithubRepo")
 
 
 @attr.s(auto_attribs=True)
-class GithubControllerReposGithubRepo:
+class GithubRepo:
     """A github repo
 
     Attributes:
@@ -26,7 +22,7 @@ class GithubControllerReposGithubRepo:
         name (Union[Unset, str]): The name of the repo
         full_name (Union[Unset, str]): The full name of the repo
         private (Union[Unset, bool]): Whether the repo is private
-        owner (Union[Unset, GithubControllerReposGithubRepoGithubRepoOwner]): The owner of this github repo
+        owner (Union[Unset, GithubRepoOwner]): The owner of this github repo
         html_url (Union[Unset, str]): The html url of the repo
         description (Union[Unset, str]): The description of the repo
         fork (Union[Unset, bool]): Whether the repo is a fork
@@ -96,8 +92,7 @@ class GithubControllerReposGithubRepo:
         topics (Union[Unset, List[str]]): The topics of the repo
         visibility (Union[Unset, str]): The visibility of the repo
         default_branch (Union[Unset, str]): The default branch of the repo
-        permissions (Union[Unset, GithubControllerReposGithubRepoGithubRepoPermissions]): The permissions object for the
-            repo
+        permissions (Union[Unset, GithubRepoPermissions]): The permissions object for the repo
     """
 
     id: Union[Unset, str] = UNSET
@@ -105,7 +100,7 @@ class GithubControllerReposGithubRepo:
     name: Union[Unset, str] = UNSET
     full_name: Union[Unset, str] = UNSET
     private: Union[Unset, bool] = UNSET
-    owner: Union[Unset, "GithubControllerReposGithubRepoGithubRepoOwner"] = UNSET
+    owner: Union[Unset, "GithubRepoOwner"] = UNSET
     html_url: Union[Unset, str] = UNSET
     description: Union[Unset, str] = UNSET
     fork: Union[Unset, bool] = UNSET
@@ -175,7 +170,7 @@ class GithubControllerReposGithubRepo:
     topics: Union[Unset, List[str]] = UNSET
     visibility: Union[Unset, str] = UNSET
     default_branch: Union[Unset, str] = UNSET
-    permissions: Union[Unset, "GithubControllerReposGithubRepoGithubRepoPermissions"] = UNSET
+    permissions: Union[Unset, "GithubRepoPermissions"] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -424,12 +419,8 @@ class GithubControllerReposGithubRepo:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.github_controller_repos_github_repo_github_repo_owner import (
-            GithubControllerReposGithubRepoGithubRepoOwner,
-        )
-        from ..models.github_controller_repos_github_repo_github_repo_permissions import (
-            GithubControllerReposGithubRepoGithubRepoPermissions,
-        )
+        from ..models.github_repo_owner import GithubRepoOwner
+        from ..models.github_repo_permissions import GithubRepoPermissions
 
         d = src_dict.copy()
         id = d.pop("id", UNSET) or UNSET
@@ -443,11 +434,11 @@ class GithubControllerReposGithubRepo:
         private = d.pop("private", UNSET) or UNSET
 
         _owner = d.pop("owner", UNSET) or UNSET
-        owner: Union[Unset, GithubControllerReposGithubRepoGithubRepoOwner]
+        owner: Union[Unset, GithubRepoOwner]
         if isinstance(_owner, Unset):
             owner = UNSET
         else:
-            owner = GithubControllerReposGithubRepoGithubRepoOwner.from_dict(_owner)
+            owner = GithubRepoOwner.from_dict(_owner)
 
         html_url = d.pop("html_url", UNSET) or UNSET
 
@@ -588,13 +579,13 @@ class GithubControllerReposGithubRepo:
         default_branch = d.pop("default_branch", UNSET) or UNSET
 
         _permissions = d.pop("permissions", UNSET) or UNSET
-        permissions: Union[Unset, GithubControllerReposGithubRepoGithubRepoPermissions]
+        permissions: Union[Unset, GithubRepoPermissions]
         if isinstance(_permissions, Unset):
             permissions = UNSET
         else:
-            permissions = GithubControllerReposGithubRepoGithubRepoPermissions.from_dict(_permissions)
+            permissions = GithubRepoPermissions.from_dict(_permissions)
 
-        github_controller_repos_github_repo = cls(
+        github_repo = cls(
             id=id,
             node_id=node_id,
             name=name,
@@ -673,8 +664,8 @@ class GithubControllerReposGithubRepo:
             permissions=permissions,
         )
 
-        github_controller_repos_github_repo.additional_properties = d
-        return github_controller_repos_github_repo
+        github_repo.additional_properties = d
+        return github_repo
 
     @property
     def additional_keys(self) -> List[str]:

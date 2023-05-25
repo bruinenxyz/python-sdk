@@ -18,12 +18,10 @@ from .create_user_dto import CreateUserDto
 from .credential_provider import CredentialProvider
 from .endpoint_data import EndpointData
 from .get_response_200 import GetResponse200
-from .github_controller_profile_github_profile import GithubControllerProfileGithubProfile
-from .github_controller_repos_github_repo import GithubControllerReposGithubRepo
-from .github_controller_repos_github_repo_github_repo_owner import GithubControllerReposGithubRepoGithubRepoOwner
-from .github_controller_repos_github_repo_github_repo_permissions import (
-    GithubControllerReposGithubRepoGithubRepoPermissions,
-)
+from .github_profile import GithubProfile
+from .github_repo import GithubRepo
+from .github_repo_owner import GithubRepoOwner
+from .github_repo_permissions import GithubRepoPermissions
 from .returned_account_dto import ReturnedAccountDto
 from .returned_confirm_dto import ReturnedConfirmDto
 from .returned_confirm_dto_params import ReturnedConfirmDtoParams
@@ -56,10 +54,10 @@ __all__ = (
     "CredentialProvider",
     "EndpointData",
     "GetResponse200",
-    "GithubControllerProfileGithubProfile",
-    "GithubControllerReposGithubRepo",
-    "GithubControllerReposGithubRepoGithubRepoOwner",
-    "GithubControllerReposGithubRepoGithubRepoPermissions",
+    "GithubProfile",
+    "GithubRepo",
+    "GithubRepoOwner",
+    "GithubRepoPermissions",
     "ReturnedAccountDto",
     "ReturnedConfirmDto",
     "ReturnedConfirmDtoParams",
