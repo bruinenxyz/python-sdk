@@ -1,0 +1,139 @@
+# TODO figure out how the generator handles multiple methods (GET, POST, etc.) with the same name
+
+import json
+from langchain.callbacks.manager import AsyncCallbackManagerForToolRun, CallbackManagerForToolRun
+from langchain.tools import BaseTool
+from pydantic import BaseModel, Field
+from typing import Optional
+
+from ..client import AuthenticatedClient
+from ..client.api.auth import get_user_auth_token
+from ..client.models import Auth
+from ..client.types import Response
+
+from typing import List, Optional
+
+from langchain.base_language import BaseLanguageModel
+from langchain.callbacks.manager import AsyncCallbackManagerForToolRun, CallbackManagerForToolRun
+from langchain.output_parsers import PydanticOutputParser
+from langchain.prompts.prompt import PromptTemplate
+from langchain.tools import BaseTool
+from pydantic import BaseModel, Field
+
+from ..client import AuthenticatedClient
+from ..client.api.accounts import find_all_accounts_for_user
+from ..client.models import ReturnedAccountDto
+from ..client.types import Response
+
+{% for resource in resources %}from ..client.api.sources import {{ resource.controller_name }}
+from ..client.models import {{ resource.output_model_name }}
+{% endfor %}
+
+class {{ authenticator_class_name }}(BaseTool):
+    name = '{{ authenticator_tool_name }}'
+    description = '''Useful for when a user\'s {{ source_name.title() }} account is not authenticated.
+    Input to the tool should be an empty string.
+    The response from the tool will be a URL that you return to the user for them to complete auth.
+    '''
+    # Could add: This URL will be your final answer.
+
+    client: AuthenticatedClient
+    server: str
+    user_id: str
+
+    def _run(
+        self,
+        query: str,
+        run_manager: Optional[CallbackManagerForToolRun] = None
+    ) -> str:
+        """Run the tool."""
+        response: Response[Auth] = get_user_auth_token(client=self.client, user_id=self.user_id)
+        auth_token = json.loads(response.content)
+
+        # TODO chat with Tevon about how this URL should be formatted
+        return self.server + '?userToken=' + auth_token + '&source={{ source_name }}'
+
+    # TODO implement this later
+    async def _arun(
+        self,
+        user_id: str,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Run the tool asynchronously."""
+        return await self.requests_wrapper.aget((query))
+
+
+
+# Import input models (there aren't any for this one)
+
+# Import the resource classes — in the generator we'll need to figure out how to include these names when there are multiple models
+
+{% for resource in resources %}
+
+class {{ resource.class_name }}(BaseTool):
+    name = "{{ resource.tool_name }}"
+    # TODO add optionality, description to parameters
+    description = """{{ resource.tool_description }}
+    {% if resource.has_parameters %}
+    Input should be a string query with the requested parameters as key/value pairs, separated by commas.
+    Possible keys for the query are:
+    
+    {% for parameter in resource.parameters %}"{{ parameter.name }}": "{{ parameter.type }}"
+    {% endfor %}{% else %}
+    Input should be an empty string.
+    {% endif %}
+    Output will be the text response from the {{ source_name.title() }} API.
+    """
+
+    client: AuthenticatedClient
+    {% if has_parameters %}llm: BaseLanguageModel
+    {% endif %}user_id: str
+
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+
+        {% if has_parameters %}parser = PydanticOutputParser(pydantic_object={{ resource.output_model_name }})
+        
+        prompt = PromptTemplate(
+            template="Parse the provided input string.\n{format_instructions}\n{query}",
+            input_variables=["query"],
+            partial_variables={"format_instructions": parser.get_format_instructions()}
+        )
+        _input = prompt.format_prompt(query=query)
+        output = self.llm(_input.to_string())
+        fields = parser.parse(output)
+        
+        {% endif %}response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
+            client=self.client, user_id=self.user_id
+        )
+        if not 200 <= response.status_code < 300:
+            return "Error pulling the user's {{ source_name.title() }} account."
+        accounts: List["ReturnedAccountDto"] = response.parsed
+
+        account_id = ""
+        for account in accounts:
+            if account.source == "{{ source_name }}":
+                account_id = account.id
+        if account_id == "":
+            return "The user has not connected their {{ source_name.title() }} account; you should try authenticating {{ source_name.title() }} first."
+        else:
+            # TODO pass additional parameters if required
+            response: Response[{{ resource.output_model_name }}] = {{ resource.controller_name }}.sync_detailed(
+                client=self.client,
+                account_id=account_id
+            )
+            if not 200 <= response.status_code < 300:
+                return "Error when attempting to {{ resource.type }} the user's {{ source_name.title() }} {{resource.name }}."
+
+            return json.dumps(response.parsed.to_dict())
+
+    # TODO implement async version
+    async def _arun(
+        self,
+        query: str,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Run the tool asynchronously."""
+        return await self.requests_wrapper.aget((query))
+
+{% endfor %}

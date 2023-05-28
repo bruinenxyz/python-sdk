@@ -1,11 +1,106 @@
 from jinja2 import Template
 from typing import List, Dict, Union
-import json
+import json, requests
 
 # TODO change naming once it's updated
 # TODO add description to JSON generated, e.g.
 # tool_description = 'Get a list of Github repos for a user'
 
+with open('templates/source_template.jinja2') as f:
+    source_template = Template(f.read())
+
+# loop through sources that we're going to use, should update to pull automatically from OpenAPI spec
+
+# Switch to production host when ready
+host = 'http://localhost:3000'
+
+response = requests.get(host + '/api-json')
+if response.status_code == 200:
+    json_data = response.json()
+
+# TODO switch to pulling this from the OpenAPI schema
+sources = ['github']
+
+for source in sources:
+    data = {}
+
+    # TODO update
+    source_name = source
+    # Create the authenticator tool
+    authenticator_class_name = source_name.title() + 'AuthenticatorTool'
+    authenticator_tool_name = source_name.title() + ' Authenticator Tool'
+
+    data['source_name'] = source_name
+    data['authenticator_class_name'] = authenticator_class_name
+    data['authenticator_tool_name'] = authenticator_tool_name
+    data['resources'] = []
+
+    for path in json_data['paths'].keys():
+        prefix = f'/sources/{source_name}/'
+        if path.startswith(prefix):
+            resource_name = path[len(prefix):]
+            print(resource_name)
+            if resource_name == 'callback':
+                continue
+
+            # GET, POST, etc.
+            resource_methods = json_data['paths'][path].keys()
+            for resource_method in resource_methods:
+                # Get the parameters
+                
+                parameters = json_data['paths'][path][resource_method]['parameters']
+                resource_parameters = []
+                # TODO test if there are parameters
+                has_parameters = False
+                for parameter in parameters:
+                    if parameter['name'] != 'accountId':
+                        has_parameters = True
+                        # TODO figure out how to deal with the schema
+                        resource_parameters.append({
+                            'name': parameter['name'],
+                            'required': parameter['required'],
+                            'description': parameter['description'],
+                            'schema': parameter['schema'],
+                        })
+                
+                # TODO may need to change this as it's pretty brittle
+                output_model_name = json_data['paths'][path][resource_method]['responses']['200']['content']['application/json']['schema']['title']
+                # Figure out if output is a single object or a list
+                print(resource_name)
+                print(json_data['paths'][path][resource_method]['responses']['200'])
+                print('')
+                # TODO description could be changed to pull from somewhere
+                resource_description = "Useful for when you need to " + resource_method + " a user's " + source_name.title() + " " + resource_name + "." 
+
+                data['resources'].append({
+                    'name': resource_name,
+                    'type': resource_method,
+                    'has_parameters': has_parameters,
+                    'parameters': parameters,
+                    'class_name': source_name.title() + resource_method.title() + resource_name.title() + 'Tool',
+                    'tool_name': source_name.title() + ' ' + resource_method.title() + ' ' + resource_name.title() + ' Tool',
+                    'tool_description': resource_description,
+                    'output_model_name': output_model_name,
+                    'controller_name': source_name + '_controller_' + resource_name,
+                })
+            
+
+
+    # print(data)
+    # exit()
+    
+
+    result = source_template.render(data)
+    with open(f'bruinen/src/bruinen/langchain/{source_name}.py', 'w') as f:
+        f.write(result)
+
+
+
+
+
+
+
+exit()
 
 with open('templates/resource_tool_template.jinja2') as f:
     resource_template = Template(f.read())
