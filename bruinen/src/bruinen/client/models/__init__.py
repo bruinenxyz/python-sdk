@@ -22,6 +22,124 @@ from .github_profile import GithubProfile
 from .github_repo import GithubRepo
 from .github_repo_owner import GithubRepoOwner
 from .github_repo_permissions import GithubRepoPermissions
+from .google_calendar import GoogleCalendar
+from .google_calendar_conference_properties import GoogleCalendarConferenceProperties
+from .google_calendar_input import GoogleCalendarInput
+from .google_calendars import GoogleCalendars
+from .google_calendars_calendars_item import GoogleCalendarsCalendarsItem
+from .google_calendars_calendars_item_conference_properties import GoogleCalendarsCalendarsItemConferenceProperties
+from .google_calendars_calendars_item_default_reminders import GoogleCalendarsCalendarsItemDefaultReminders
+from .google_calendars_calendars_item_notification_settings import GoogleCalendarsCalendarsItemNotificationSettings
+from .google_calendars_calendars_item_notification_settings_notifications_item import (
+    GoogleCalendarsCalendarsItemNotificationSettingsNotificationsItem,
+)
+from .google_calendars_input import GoogleCalendarsInput
+from .google_draft import GoogleDraft
+from .google_draft_input import GoogleDraftInput
+from .google_draft_message import GoogleDraftMessage
+from .google_draft_message_payload import GoogleDraftMessagePayload
+from .google_draft_message_payload_body import GoogleDraftMessagePayloadBody
+from .google_draft_message_payload_headers_item import GoogleDraftMessagePayloadHeadersItem
+from .google_draft_message_payload_parts_item import GoogleDraftMessagePayloadPartsItem
+from .google_draft_message_payload_parts_item_body import GoogleDraftMessagePayloadPartsItemBody
+from .google_draft_message_payload_parts_item_headers_item import GoogleDraftMessagePayloadPartsItemHeadersItem
+from .google_drafts import GoogleDrafts
+from .google_drafts_drafts_item import GoogleDraftsDraftsItem
+from .google_drafts_drafts_item_message import GoogleDraftsDraftsItemMessage
+from .google_drafts_input import GoogleDraftsInput
+from .google_event import GoogleEvent
+from .google_event_attachments_item import GoogleEventAttachmentsItem
+from .google_event_attendees_item import GoogleEventAttendeesItem
+from .google_event_conference_data import GoogleEventConferenceData
+from .google_event_conference_data_conference_solution import GoogleEventConferenceDataConferenceSolution
+from .google_event_conference_data_conference_solution_key import GoogleEventConferenceDataConferenceSolutionKey
+from .google_event_conference_data_create_request import GoogleEventConferenceDataCreateRequest
+from .google_event_conference_data_create_request_conference_solution_key import (
+    GoogleEventConferenceDataCreateRequestConferenceSolutionKey,
+)
+from .google_event_conference_data_create_request_status import GoogleEventConferenceDataCreateRequestStatus
+from .google_event_conference_data_entry_points_item import GoogleEventConferenceDataEntryPointsItem
+from .google_event_creator import GoogleEventCreator
+from .google_event_end import GoogleEventEnd
+from .google_event_extended_properties import GoogleEventExtendedProperties
+from .google_event_extended_properties_private import GoogleEventExtendedPropertiesPrivate
+from .google_event_extended_properties_shared import GoogleEventExtendedPropertiesShared
+from .google_event_gadget import GoogleEventGadget
+from .google_event_gadget_preferences import GoogleEventGadgetPreferences
+from .google_event_input import GoogleEventInput
+from .google_event_organizer import GoogleEventOrganizer
+from .google_event_original_start_time import GoogleEventOriginalStartTime
+from .google_event_reminders import GoogleEventReminders
+from .google_event_reminders_overrides_item import GoogleEventRemindersOverridesItem
+from .google_event_source import GoogleEventSource
+from .google_event_start import GoogleEventStart
+from .google_events import GoogleEvents
+from .google_events_default_reminders_item import GoogleEventsDefaultRemindersItem
+from .google_events_events_item import GoogleEventsEventsItem
+from .google_events_events_item_attachments_item import GoogleEventsEventsItemAttachmentsItem
+from .google_events_events_item_attendees_item import GoogleEventsEventsItemAttendeesItem
+from .google_events_events_item_conference_data import GoogleEventsEventsItemConferenceData
+from .google_events_events_item_conference_data_conference_solution import (
+    GoogleEventsEventsItemConferenceDataConferenceSolution,
+)
+from .google_events_events_item_conference_data_conference_solution_key import (
+    GoogleEventsEventsItemConferenceDataConferenceSolutionKey,
+)
+from .google_events_events_item_conference_data_create_request import GoogleEventsEventsItemConferenceDataCreateRequest
+from .google_events_events_item_conference_data_create_request_conference_solution_key import (
+    GoogleEventsEventsItemConferenceDataCreateRequestConferenceSolutionKey,
+)
+from .google_events_events_item_conference_data_create_request_status import (
+    GoogleEventsEventsItemConferenceDataCreateRequestStatus,
+)
+from .google_events_events_item_conference_data_entry_points_item import (
+    GoogleEventsEventsItemConferenceDataEntryPointsItem,
+)
+from .google_events_events_item_creator import GoogleEventsEventsItemCreator
+from .google_events_events_item_end import GoogleEventsEventsItemEnd
+from .google_events_events_item_extended_properties import GoogleEventsEventsItemExtendedProperties
+from .google_events_events_item_extended_properties_private import GoogleEventsEventsItemExtendedPropertiesPrivate
+from .google_events_events_item_extended_properties_shared import GoogleEventsEventsItemExtendedPropertiesShared
+from .google_events_events_item_gadget import GoogleEventsEventsItemGadget
+from .google_events_events_item_gadget_preferences import GoogleEventsEventsItemGadgetPreferences
+from .google_events_events_item_organizer import GoogleEventsEventsItemOrganizer
+from .google_events_events_item_original_start_time import GoogleEventsEventsItemOriginalStartTime
+from .google_events_events_item_reminders import GoogleEventsEventsItemReminders
+from .google_events_events_item_reminders_overrides_item import GoogleEventsEventsItemRemindersOverridesItem
+from .google_events_events_item_source import GoogleEventsEventsItemSource
+from .google_events_events_item_start import GoogleEventsEventsItemStart
+from .google_events_input import GoogleEventsInput
+from .google_label import GoogleLabel
+from .google_label_color import GoogleLabelColor
+from .google_label_input import GoogleLabelInput
+from .google_labels import GoogleLabels
+from .google_labels_labels_item import GoogleLabelsLabelsItem
+from .google_message import GoogleMessage
+from .google_message_input import GoogleMessageInput
+from .google_message_payload import GoogleMessagePayload
+from .google_message_payload_body import GoogleMessagePayloadBody
+from .google_message_payload_headers_item import GoogleMessagePayloadHeadersItem
+from .google_message_payload_parts_item import GoogleMessagePayloadPartsItem
+from .google_message_payload_parts_item_body import GoogleMessagePayloadPartsItemBody
+from .google_message_payload_parts_item_headers_item import GoogleMessagePayloadPartsItemHeadersItem
+from .google_messages import GoogleMessages
+from .google_messages_input import GoogleMessagesInput
+from .google_messages_messages_item import GoogleMessagesMessagesItem
+from .google_profile import GoogleProfile
+from .google_thread import GoogleThread
+from .google_thread_input import GoogleThreadInput
+from .google_thread_messages_item import GoogleThreadMessagesItem
+from .google_thread_messages_item_payload import GoogleThreadMessagesItemPayload
+from .google_thread_messages_item_payload_body import GoogleThreadMessagesItemPayloadBody
+from .google_thread_messages_item_payload_headers_item import GoogleThreadMessagesItemPayloadHeadersItem
+from .google_thread_messages_item_payload_parts_item import GoogleThreadMessagesItemPayloadPartsItem
+from .google_thread_messages_item_payload_parts_item_body import GoogleThreadMessagesItemPayloadPartsItemBody
+from .google_thread_messages_item_payload_parts_item_headers_item import (
+    GoogleThreadMessagesItemPayloadPartsItemHeadersItem,
+)
+from .google_threads import GoogleThreads
+from .google_threads_input import GoogleThreadsInput
+from .google_threads_threads_item import GoogleThreadsThreadsItem
 from .returned_account_dto import ReturnedAccountDto
 from .returned_confirm_dto import ReturnedConfirmDto
 from .returned_confirm_dto_params import ReturnedConfirmDtoParams
@@ -58,6 +176,108 @@ __all__ = (
     "GithubRepo",
     "GithubRepoOwner",
     "GithubRepoPermissions",
+    "GoogleCalendar",
+    "GoogleCalendarConferenceProperties",
+    "GoogleCalendarInput",
+    "GoogleCalendars",
+    "GoogleCalendarsCalendarsItem",
+    "GoogleCalendarsCalendarsItemConferenceProperties",
+    "GoogleCalendarsCalendarsItemDefaultReminders",
+    "GoogleCalendarsCalendarsItemNotificationSettings",
+    "GoogleCalendarsCalendarsItemNotificationSettingsNotificationsItem",
+    "GoogleCalendarsInput",
+    "GoogleDraft",
+    "GoogleDraftInput",
+    "GoogleDraftMessage",
+    "GoogleDraftMessagePayload",
+    "GoogleDraftMessagePayloadBody",
+    "GoogleDraftMessagePayloadHeadersItem",
+    "GoogleDraftMessagePayloadPartsItem",
+    "GoogleDraftMessagePayloadPartsItemBody",
+    "GoogleDraftMessagePayloadPartsItemHeadersItem",
+    "GoogleDrafts",
+    "GoogleDraftsDraftsItem",
+    "GoogleDraftsDraftsItemMessage",
+    "GoogleDraftsInput",
+    "GoogleEvent",
+    "GoogleEventAttachmentsItem",
+    "GoogleEventAttendeesItem",
+    "GoogleEventConferenceData",
+    "GoogleEventConferenceDataConferenceSolution",
+    "GoogleEventConferenceDataConferenceSolutionKey",
+    "GoogleEventConferenceDataCreateRequest",
+    "GoogleEventConferenceDataCreateRequestConferenceSolutionKey",
+    "GoogleEventConferenceDataCreateRequestStatus",
+    "GoogleEventConferenceDataEntryPointsItem",
+    "GoogleEventCreator",
+    "GoogleEventEnd",
+    "GoogleEventExtendedProperties",
+    "GoogleEventExtendedPropertiesPrivate",
+    "GoogleEventExtendedPropertiesShared",
+    "GoogleEventGadget",
+    "GoogleEventGadgetPreferences",
+    "GoogleEventInput",
+    "GoogleEventOrganizer",
+    "GoogleEventOriginalStartTime",
+    "GoogleEventReminders",
+    "GoogleEventRemindersOverridesItem",
+    "GoogleEvents",
+    "GoogleEventsDefaultRemindersItem",
+    "GoogleEventsEventsItem",
+    "GoogleEventsEventsItemAttachmentsItem",
+    "GoogleEventsEventsItemAttendeesItem",
+    "GoogleEventsEventsItemConferenceData",
+    "GoogleEventsEventsItemConferenceDataConferenceSolution",
+    "GoogleEventsEventsItemConferenceDataConferenceSolutionKey",
+    "GoogleEventsEventsItemConferenceDataCreateRequest",
+    "GoogleEventsEventsItemConferenceDataCreateRequestConferenceSolutionKey",
+    "GoogleEventsEventsItemConferenceDataCreateRequestStatus",
+    "GoogleEventsEventsItemConferenceDataEntryPointsItem",
+    "GoogleEventsEventsItemCreator",
+    "GoogleEventsEventsItemEnd",
+    "GoogleEventsEventsItemExtendedProperties",
+    "GoogleEventsEventsItemExtendedPropertiesPrivate",
+    "GoogleEventsEventsItemExtendedPropertiesShared",
+    "GoogleEventsEventsItemGadget",
+    "GoogleEventsEventsItemGadgetPreferences",
+    "GoogleEventsEventsItemOrganizer",
+    "GoogleEventsEventsItemOriginalStartTime",
+    "GoogleEventsEventsItemReminders",
+    "GoogleEventsEventsItemRemindersOverridesItem",
+    "GoogleEventsEventsItemSource",
+    "GoogleEventsEventsItemStart",
+    "GoogleEventsInput",
+    "GoogleEventSource",
+    "GoogleEventStart",
+    "GoogleLabel",
+    "GoogleLabelColor",
+    "GoogleLabelInput",
+    "GoogleLabels",
+    "GoogleLabelsLabelsItem",
+    "GoogleMessage",
+    "GoogleMessageInput",
+    "GoogleMessagePayload",
+    "GoogleMessagePayloadBody",
+    "GoogleMessagePayloadHeadersItem",
+    "GoogleMessagePayloadPartsItem",
+    "GoogleMessagePayloadPartsItemBody",
+    "GoogleMessagePayloadPartsItemHeadersItem",
+    "GoogleMessages",
+    "GoogleMessagesInput",
+    "GoogleMessagesMessagesItem",
+    "GoogleProfile",
+    "GoogleThread",
+    "GoogleThreadInput",
+    "GoogleThreadMessagesItem",
+    "GoogleThreadMessagesItemPayload",
+    "GoogleThreadMessagesItemPayloadBody",
+    "GoogleThreadMessagesItemPayloadHeadersItem",
+    "GoogleThreadMessagesItemPayloadPartsItem",
+    "GoogleThreadMessagesItemPayloadPartsItemBody",
+    "GoogleThreadMessagesItemPayloadPartsItemHeadersItem",
+    "GoogleThreads",
+    "GoogleThreadsInput",
+    "GoogleThreadsThreadsItem",
     "ReturnedAccountDto",
     "ReturnedConfirmDto",
     "ReturnedConfirmDtoParams",

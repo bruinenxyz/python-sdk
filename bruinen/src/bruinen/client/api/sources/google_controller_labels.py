@@ -1,11 +1,11 @@
 from http import HTTPStatus
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import httpx
 
 from ... import errors
 from ...client import Client
-from ...models.github_repo import GithubRepo
+from ...models.google_labels import GoogleLabels
 from ...types import UNSET, Response
 
 
@@ -14,7 +14,7 @@ def _get_kwargs(
     client: Client,
     account_id: str,
 ) -> Dict[str, Any]:
-    url = "{}/sources/github/repos".format(client.base_url)
+    url = "{}/sources/google/labels".format(client.base_url)
 
     headers: Dict[str, str] = client.get_headers()
     cookies: Dict[str, Any] = client.get_cookies()
@@ -35,14 +35,9 @@ def _get_kwargs(
     }
 
 
-def _parse_response(*, client: Client, response: httpx.Response) -> Optional[List["GithubRepo"]]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[GoogleLabels]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = []
-        _response_200 = response.json()
-        for response_200_item_data in _response_200:
-            response_200_item = GithubRepo.from_dict(response_200_item_data)
-
-            response_200.append(response_200_item)
+        response_200 = GoogleLabels.from_dict(response.json())
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -51,7 +46,7 @@ def _parse_response(*, client: Client, response: httpx.Response) -> Optional[Lis
         return None
 
 
-def _build_response(*, client: Client, response: httpx.Response) -> Response[List["GithubRepo"]]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[GoogleLabels]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -64,7 +59,7 @@ def sync_detailed(
     *,
     client: Client,
     account_id: str,
-) -> Response[List["GithubRepo"]]:
+) -> Response[GoogleLabels]:
     """
     Args:
         account_id (str):
@@ -74,7 +69,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[List['GithubRepo']]
+        Response[GoogleLabels]
     """
 
     kwargs = _get_kwargs(
@@ -94,7 +89,7 @@ def sync(
     *,
     client: Client,
     account_id: str,
-) -> Optional[List["GithubRepo"]]:
+) -> Optional[GoogleLabels]:
     """
     Args:
         account_id (str):
@@ -104,7 +99,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        List['GithubRepo']
+        GoogleLabels
     """
 
     return sync_detailed(
@@ -117,7 +112,7 @@ async def asyncio_detailed(
     *,
     client: Client,
     account_id: str,
-) -> Response[List["GithubRepo"]]:
+) -> Response[GoogleLabels]:
     """
     Args:
         account_id (str):
@@ -127,7 +122,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[List['GithubRepo']]
+        Response[GoogleLabels]
     """
 
     kwargs = _get_kwargs(
@@ -145,7 +140,7 @@ async def asyncio(
     *,
     client: Client,
     account_id: str,
-) -> Optional[List["GithubRepo"]]:
+) -> Optional[GoogleLabels]:
     """
     Args:
         account_id (str):
@@ -155,7 +150,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        List['GithubRepo']
+        GoogleLabels
     """
 
     return (

@@ -9,7 +9,7 @@ bruinen_secret = os.getenv('BRUINEN_SECRET')
 from langchain.agents import initialize_agent
 from langchain.llms import OpenAI
 
-from bruinen.src.bruinen.langchain.github import GithubGetProfileTool
+from bruinen.src.bruinen.langchain.github import GithubGetProfileTool, GithubGetReposTool
 from bruinen.src.bruinen.client import AuthenticatedClient
 
 client = AuthenticatedClient(base_url='http://localhost:3000', token=bruinen_secret, prefix='', auth_header_name='X-API-Key')
@@ -19,6 +19,7 @@ user_id = '0a40131b-7c8a-4d0b-a2ba-a99e20db31ae'
 
 llm = OpenAI(temperature=0)
 # github = GithubGetReposTool(llm=llm, client=client, user_id=user_id)
-github = GithubGetProfileTool(client=client, user_id=user_id)
-agent = initialize_agent([github], llm, agent='chat-zero-shot-react-description', verbose=True)
-result = agent.run("What is my Github profile?")
+github_profile = GithubGetProfileTool(client=client, user_id=user_id)
+github_repos = GithubGetReposTool(client=client, user_id=user_id)
+agent = initialize_agent([github_profile, github_repos], llm, agent='chat-zero-shot-react-description', verbose=True)
+result = agent.run("What are my Github repos?")

@@ -1,28 +1,18 @@
 # TODO figure out how the generator handles multiple methods (GET, POST, etc.) with the same name
 
 import json
-from langchain.callbacks.manager import AsyncCallbackManagerForToolRun, CallbackManagerForToolRun
-from langchain.tools import BaseTool
-from pydantic import BaseModel, Field
-from typing import Optional
-
-from ..client import AuthenticatedClient
-from ..client.api.auth import get_user_auth_token
-from ..client.models import Auth
-from ..client.types import Response
-
-from typing import List, Optional
-
 from langchain.base_language import BaseLanguageModel
 from langchain.callbacks.manager import AsyncCallbackManagerForToolRun, CallbackManagerForToolRun
 from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts.prompt import PromptTemplate
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
+from typing import List, Optional
 
 from ..client import AuthenticatedClient
 from ..client.api.accounts import find_all_accounts_for_user
-from ..client.models import ReturnedAccountDto
+from ..client.api.auth import get_user_auth_token
+from ..client.models import Auth, ReturnedAccountDto
 from ..client.types import Response
 
 from ..client.api.sources import github_controller_repos
@@ -33,10 +23,10 @@ from ..client.models import GithubProfile
 
 class GithubAuthenticatorTool(BaseTool):
     name = 'Github Authenticator Tool'
-    description = '''Useful for when a user\'s Github account is not authenticated.
+    description = """Useful for when a user's Github account is not authenticated.
     Input to the tool should be an empty string.
     The response from the tool will be a URL that you return to the user for them to complete auth.
-    '''
+    """
     # Could add: This URL will be your final answer.
 
     client: AuthenticatedClient
@@ -103,14 +93,16 @@ class GithubGetReposTool(BaseTool):
             return "The user has not connected their Github account; you should try authenticating Github first."
         else:
             # TODO pass additional parameters if required
-            response: Response[GithubRepo] = github_controller_repos.sync_detailed(
+            response: Response[List["GithubRepo"]] = github_controller_repos.sync_detailed(
                 client=self.client,
                 account_id=account_id
             )
             if not 200 <= response.status_code < 300:
                 return "Error when attempting to get the user's Github repos."
 
-            return json.dumps(response.parsed.to_dict())
+             # Call each response item's to_dict() method and return the result as a JSON string
+            return json.dumps(list(map(lambda x: x.to_dict(), response.parsed)))
+            
 
     # TODO implement async version
     async def _arun(
@@ -161,7 +153,8 @@ class GithubGetProfileTool(BaseTool):
             if not 200 <= response.status_code < 300:
                 return "Error when attempting to get the user's Github profile."
 
-            return json.dumps(response.parsed.to_dict())
+            return json.dumps(response.parsed)
+            
 
     # TODO implement async version
     async def _arun(

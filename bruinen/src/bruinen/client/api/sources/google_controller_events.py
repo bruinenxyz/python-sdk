@@ -1,25 +1,31 @@
 from http import HTTPStatus
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import httpx
 
 from ... import errors
 from ...client import Client
-from ...models.github_repo import GithubRepo
+from ...models.google_events import GoogleEvents
+from ...models.google_events_input import GoogleEventsInput
 from ...types import UNSET, Response
 
 
 def _get_kwargs(
     *,
     client: Client,
+    field_: "GoogleEventsInput",
     account_id: str,
 ) -> Dict[str, Any]:
-    url = "{}/sources/github/repos".format(client.base_url)
+    url = "{}/sources/google/events".format(client.base_url)
 
     headers: Dict[str, str] = client.get_headers()
     cookies: Dict[str, Any] = client.get_cookies()
 
     params: Dict[str, Any] = {}
+    json_field_ = field_.to_dict()
+
+    params.update(json_field_)
+
     params["accountId"] = account_id
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
@@ -35,14 +41,9 @@ def _get_kwargs(
     }
 
 
-def _parse_response(*, client: Client, response: httpx.Response) -> Optional[List["GithubRepo"]]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[GoogleEvents]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = []
-        _response_200 = response.json()
-        for response_200_item_data in _response_200:
-            response_200_item = GithubRepo.from_dict(response_200_item_data)
-
-            response_200.append(response_200_item)
+        response_200 = GoogleEvents.from_dict(response.json())
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -51,7 +52,7 @@ def _parse_response(*, client: Client, response: httpx.Response) -> Optional[Lis
         return None
 
 
-def _build_response(*, client: Client, response: httpx.Response) -> Response[List["GithubRepo"]]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[GoogleEvents]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -63,10 +64,12 @@ def _build_response(*, client: Client, response: httpx.Response) -> Response[Lis
 def sync_detailed(
     *,
     client: Client,
+    field_: "GoogleEventsInput",
     account_id: str,
-) -> Response[List["GithubRepo"]]:
+) -> Response[GoogleEvents]:
     """
     Args:
+        field_ (GoogleEventsInput): The input for your google calendar's events
         account_id (str):
 
     Raises:
@@ -74,11 +77,12 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[List['GithubRepo']]
+        Response[GoogleEvents]
     """
 
     kwargs = _get_kwargs(
         client=client,
+        field_=field_,
         account_id=account_id,
     )
 
@@ -93,10 +97,12 @@ def sync_detailed(
 def sync(
     *,
     client: Client,
+    field_: "GoogleEventsInput",
     account_id: str,
-) -> Optional[List["GithubRepo"]]:
+) -> Optional[GoogleEvents]:
     """
     Args:
+        field_ (GoogleEventsInput): The input for your google calendar's events
         account_id (str):
 
     Raises:
@@ -104,11 +110,12 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        List['GithubRepo']
+        GoogleEvents
     """
 
     return sync_detailed(
         client=client,
+        field_=field_,
         account_id=account_id,
     ).parsed
 
@@ -116,10 +123,12 @@ def sync(
 async def asyncio_detailed(
     *,
     client: Client,
+    field_: "GoogleEventsInput",
     account_id: str,
-) -> Response[List["GithubRepo"]]:
+) -> Response[GoogleEvents]:
     """
     Args:
+        field_ (GoogleEventsInput): The input for your google calendar's events
         account_id (str):
 
     Raises:
@@ -127,11 +136,12 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[List['GithubRepo']]
+        Response[GoogleEvents]
     """
 
     kwargs = _get_kwargs(
         client=client,
+        field_=field_,
         account_id=account_id,
     )
 
@@ -144,10 +154,12 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Client,
+    field_: "GoogleEventsInput",
     account_id: str,
-) -> Optional[List["GithubRepo"]]:
+) -> Optional[GoogleEvents]:
     """
     Args:
+        field_ (GoogleEventsInput): The input for your google calendar's events
         account_id (str):
 
     Raises:
@@ -155,12 +167,13 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        List['GithubRepo']
+        GoogleEvents
     """
 
     return (
         await asyncio_detailed(
             client=client,
+            field_=field_,
             account_id=account_id,
         )
     ).parsed
