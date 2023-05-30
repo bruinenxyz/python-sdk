@@ -39,7 +39,7 @@ for source in sources:
         prefix = f'/sources/{source_name}/'
         if path.startswith(prefix):
             resource_name = path[len(prefix):]
-            print(resource_name)
+            # print(resource_name)
             if resource_name == 'callback':
                 continue
 
@@ -64,11 +64,26 @@ for source in sources:
                         })
                 
                 # TODO may need to change this as it's pretty brittle
-                output_model_name = json_data['paths'][path][resource_method]['responses']['200']['content']['application/json']['schema']['title']
+                output_model = json_data['paths'][path][resource_method]['responses']['200']['content']['application/json']['schema']
+                
+                if output_model['type'] == 'array':
+                    output_model_name = output_model['items']['title']
+                    is_array = True
+                else:
+                    output_model_name = output_model['title']
+                    is_array = False
+                
+
+                
+                # print(resource_name)
+                # print(output_model['type'])
+                # print()
+                # output_model_name = json_data['paths'][path][resource_method]['responses']['200']['content']['application/json']['schema']['title']
                 # Figure out if output is a single object or a list
-                print(resource_name)
-                print(json_data['paths'][path][resource_method]['responses']['200'])
-                print('')
+                # print(resource_name)
+                # print(json_data['paths'][path][resource_method]['responses']['200'])
+                # print('')
+                
                 # TODO description could be changed to pull from somewhere
                 resource_description = "Useful for when you need to " + resource_method + " a user's " + source_name.title() + " " + resource_name + "." 
 
@@ -81,6 +96,7 @@ for source in sources:
                     'tool_name': source_name.title() + ' ' + resource_method.title() + ' ' + resource_name.title() + ' Tool',
                     'tool_description': resource_description,
                     'output_model_name': output_model_name,
+                    'is_array': is_array,
                     'controller_name': source_name + '_controller_' + resource_name,
                 })
             
