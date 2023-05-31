@@ -7,7 +7,7 @@ from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts.prompt import PromptTemplate
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 from ..client import AuthenticatedClient
 from ..client.api.accounts import find_all_accounts_for_user
@@ -22,7 +22,9 @@ from ..client.models import {{ resource.output_model_name }}
 class {{ authenticator_class_name }}(BaseTool):
     name = '{{ authenticator_tool_name }}'
     description = """Useful for when a user's {{ source_name.title() }} account is not authenticated.
+
     Input to the tool should be an empty string.
+
     The response from the tool will be a URL that you return to the user for them to complete auth.
     """
     # Could add: This URL will be your final answer.
@@ -63,6 +65,7 @@ class {{ authenticator_class_name }}(BaseTool):
 class {{ resource.class_name }}(BaseTool):
     name = "{{ resource.tool_name }}"
     # TODO add optionality, description to parameters
+    # TODO maybe update description to talk about the output parser
     description = """{{ resource.tool_description }}
     {% if resource.has_parameters %}
     Input should be a string query with the requested parameters as key/value pairs, separated by commas.
@@ -78,6 +81,7 @@ class {{ resource.class_name }}(BaseTool):
     client: AuthenticatedClient
     {% if has_parameters %}llm: BaseLanguageModel
     {% endif %}user_id: str
+    parse_output: Optional[Callable[[{% if resource.is_array %}List["{{ resource.output_model_name }}"]{% else %}{{ resource.output_model_name }}{% endif %}], str]] = None
 
     def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
         """Run the tool."""
@@ -115,10 +119,11 @@ class {{ resource.class_name }}(BaseTool):
             if not 200 <= response.status_code < 300:
                 return "Error when attempting to {{ resource.type }} the user's {{ source_name.title() }} {{resource.name }}."
 
-            {% if resource.is_array %} # Call each response item's to_dict() method and return the result as a JSON string
-            return json.dumps(list(map(lambda x: x.to_dict(), response.parsed)))
-            {% else %}return json.dumps(response.parsed)
-            {% endif %}
+            if self.parse_output is None:
+                {% if resource.is_array %}# Call each response item's to_dict() method and return the result as a JSON string
+                return json.dumps(list(map(lambda x: x.to_dict(), response.parsed))){% else %}return json.dumps(response.parsed.to_dict()){% endif %}
+            else:
+                return self.parse_output(response.parsed)
 
     # TODO implement async version
     async def _arun(

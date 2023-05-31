@@ -18,7 +18,31 @@ client = AuthenticatedClient(base_url='http://localhost:3000', token=bruinen_sec
 user_id = '0a40131b-7c8a-4d0b-a2ba-a99e20db31ae'
 
 llm = OpenAI(temperature=0)
-# github = GithubGetReposTool(llm=llm, client=client, user_id=user_id)
+
+# Example of a SQL output parser
+from bruinen.src.bruinen.langchain.parsers.github_test import parse_sql_github_repos
+github_repos_sql = GithubGetReposTool(client=client, user_id=user_id, parse_output=parse_sql_github_repos)
+agent = initialize_agent([github_repos_sql], llm, agent='chat-zero-shot-react-description', verbose=True)
+result = agent.run("What are my Github repos?")
+
+
+# exit()
+
+# Example of a custom output parser
+def parse_output(output):
+    print("In parser")
+    print('output')
+    print(output)
+    return "Output from Github profile"
+
+# github_repos_custom = GithubGetProfileTool(client=client, user_id=user_id)
+# agent = initialize_agent([github_repos_custom], llm, agent='chat-zero-shot-react-description', verbose=True)
+# result = agent.run("What is my Github profile?")
+
+
+exit()
+
+# Generic example
 github_profile = GithubGetProfileTool(client=client, user_id=user_id)
 github_repos = GithubGetReposTool(client=client, user_id=user_id)
 agent = initialize_agent([github_profile, github_repos], llm, agent='chat-zero-shot-react-description', verbose=True)
