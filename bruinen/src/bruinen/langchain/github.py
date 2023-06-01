@@ -7,7 +7,7 @@ from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts.prompt import PromptTemplate
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 from ..client import AuthenticatedClient
 from ..client.api.accounts import find_all_accounts_for_user
@@ -24,7 +24,9 @@ from ..client.models import GithubProfile
 class GithubAuthenticatorTool(BaseTool):
     name = 'Github Authenticator Tool'
     description = """Useful for when a user's Github account is not authenticated.
+
     Input to the tool should be an empty string.
+
     The response from the tool will be a URL that you return to the user for them to complete auth.
     """
     # Could add: This URL will be your final answer.
@@ -65,15 +67,17 @@ class GithubAuthenticatorTool(BaseTool):
 class GithubGetReposTool(BaseTool):
     name = "Github Get Repos Tool"
     # TODO add optionality, description to parameters
+    # TODO maybe update description to talk about the output parser
     description = """Useful for when you need to get a user's Github repos.
     
-    Input should be an empty string.
+    Input should be the question that you want to know the answer to.
     
     Output will be the text response from the Github API.
     """
 
     client: AuthenticatedClient
     user_id: str
+    parse_output: Optional[Callable[[List["GithubRepo"]], str]] = None
 
     def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
         """Run the tool."""
@@ -100,9 +104,11 @@ class GithubGetReposTool(BaseTool):
             if not 200 <= response.status_code < 300:
                 return "Error when attempting to get the user's Github repos."
 
-             # Call each response item's to_dict() method and return the result as a JSON string
-            return json.dumps(list(map(lambda x: x.to_dict(), response.parsed)))
-            
+            if self.parse_output is None:
+                # Call each response item's to_dict() method and return the result as a JSON string
+                return json.dumps(list(map(lambda x: x.to_dict(), response.parsed)))
+            else:
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -118,15 +124,17 @@ class GithubGetReposTool(BaseTool):
 class GithubGetProfileTool(BaseTool):
     name = "Github Get Profile Tool"
     # TODO add optionality, description to parameters
+    # TODO maybe update description to talk about the output parser
     description = """Useful for when you need to get a user's Github profile.
     
-    Input should be an empty string.
+    Input should be the question that you want to know the answer to.
     
     Output will be the text response from the Github API.
     """
 
     client: AuthenticatedClient
     user_id: str
+    parse_output: Optional[Callable[[GithubProfile], str]] = None
 
     def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
         """Run the tool."""
@@ -153,8 +161,10 @@ class GithubGetProfileTool(BaseTool):
             if not 200 <= response.status_code < 300:
                 return "Error when attempting to get the user's Github profile."
 
-            return json.dumps(response.parsed)
-            
+            if self.parse_output is None:
+                return json.dumps(response.parsed.to_dict())
+            else:
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
