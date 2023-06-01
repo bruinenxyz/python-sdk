@@ -73,7 +73,7 @@ class {{ resource.class_name }}(BaseTool):
     
     {% for parameter in resource.parameters %}"{{ parameter.name }}": "{{ parameter.type }}"
     {% endfor %}{% else %}
-    Input should be an empty string.
+    Input should be the question that you want to know the answer to.
     {% endif %}
     Output will be the text response from the {{ source_name.title() }} API.
     """
@@ -123,7 +123,7 @@ class {{ resource.class_name }}(BaseTool):
                 {% if resource.is_array %}# Call each response item's to_dict() method and return the result as a JSON string
                 return json.dumps(list(map(lambda x: x.to_dict(), response.parsed))){% else %}return json.dumps(response.parsed.to_dict()){% endif %}
             else:
-                return self.parse_output(response.parsed)
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(

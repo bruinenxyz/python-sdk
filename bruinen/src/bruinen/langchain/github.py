@@ -70,7 +70,7 @@ class GithubGetReposTool(BaseTool):
     # TODO maybe update description to talk about the output parser
     description = """Useful for when you need to get a user's Github repos.
     
-    Input should be an empty string.
+    Input should be the question that you want to know the answer to.
     
     Output will be the text response from the Github API.
     """
@@ -108,7 +108,7 @@ class GithubGetReposTool(BaseTool):
                 # Call each response item's to_dict() method and return the result as a JSON string
                 return json.dumps(list(map(lambda x: x.to_dict(), response.parsed)))
             else:
-                return self.parse_output(response.parsed)
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -127,7 +127,7 @@ class GithubGetProfileTool(BaseTool):
     # TODO maybe update description to talk about the output parser
     description = """Useful for when you need to get a user's Github profile.
     
-    Input should be an empty string.
+    Input should be the question that you want to know the answer to.
     
     Output will be the text response from the Github API.
     """
@@ -164,7 +164,7 @@ class GithubGetProfileTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed)
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
