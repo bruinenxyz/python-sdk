@@ -1,19 +1,21 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 import httpx
 
 from ... import errors
 from ...client import Client
 from ...models.google_calendars import GoogleCalendars
-from ...models.google_calendars_input import GoogleCalendarsInput
-from ...types import UNSET, Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     *,
     client: Client,
-    field_: "GoogleCalendarsInput",
+    sync_token: Union[Unset, None, str] = UNSET,
+    show_hidden: Union[Unset, None, bool] = UNSET,
+    show_deleted: Union[Unset, None, bool] = UNSET,
+    page_token: Union[Unset, None, str] = UNSET,
     account_id: str,
 ) -> Dict[str, Any]:
     url = "{}/sources/google/calendars".format(client.base_url)
@@ -22,9 +24,13 @@ def _get_kwargs(
     cookies: Dict[str, Any] = client.get_cookies()
 
     params: Dict[str, Any] = {}
-    json_field_ = field_.to_dict()
+    params["syncToken"] = sync_token
 
-    params.update(json_field_)
+    params["showHidden"] = show_hidden
+
+    params["showDeleted"] = show_deleted
+
+    params["pageToken"] = page_token
 
     params["accountId"] = account_id
 
@@ -64,12 +70,18 @@ def _build_response(*, client: Client, response: httpx.Response) -> Response[Goo
 def sync_detailed(
     *,
     client: Client,
-    field_: "GoogleCalendarsInput",
+    sync_token: Union[Unset, None, str] = UNSET,
+    show_hidden: Union[Unset, None, bool] = UNSET,
+    show_deleted: Union[Unset, None, bool] = UNSET,
+    page_token: Union[Unset, None, str] = UNSET,
     account_id: str,
 ) -> Response[GoogleCalendars]:
     """
     Args:
-        field_ (GoogleCalendarsInput): The input for your google calendars
+        sync_token (Union[Unset, None, str]):
+        show_hidden (Union[Unset, None, bool]):
+        show_deleted (Union[Unset, None, bool]):
+        page_token (Union[Unset, None, str]):
         account_id (str):
 
     Raises:
@@ -82,7 +94,10 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         client=client,
-        field_=field_,
+        sync_token=sync_token,
+        show_hidden=show_hidden,
+        show_deleted=show_deleted,
+        page_token=page_token,
         account_id=account_id,
     )
 
@@ -97,12 +112,18 @@ def sync_detailed(
 def sync(
     *,
     client: Client,
-    field_: "GoogleCalendarsInput",
+    sync_token: Union[Unset, None, str] = UNSET,
+    show_hidden: Union[Unset, None, bool] = UNSET,
+    show_deleted: Union[Unset, None, bool] = UNSET,
+    page_token: Union[Unset, None, str] = UNSET,
     account_id: str,
 ) -> Optional[GoogleCalendars]:
     """
     Args:
-        field_ (GoogleCalendarsInput): The input for your google calendars
+        sync_token (Union[Unset, None, str]):
+        show_hidden (Union[Unset, None, bool]):
+        show_deleted (Union[Unset, None, bool]):
+        page_token (Union[Unset, None, str]):
         account_id (str):
 
     Raises:
@@ -115,7 +136,10 @@ def sync(
 
     return sync_detailed(
         client=client,
-        field_=field_,
+        sync_token=sync_token,
+        show_hidden=show_hidden,
+        show_deleted=show_deleted,
+        page_token=page_token,
         account_id=account_id,
     ).parsed
 
@@ -123,12 +147,18 @@ def sync(
 async def asyncio_detailed(
     *,
     client: Client,
-    field_: "GoogleCalendarsInput",
+    sync_token: Union[Unset, None, str] = UNSET,
+    show_hidden: Union[Unset, None, bool] = UNSET,
+    show_deleted: Union[Unset, None, bool] = UNSET,
+    page_token: Union[Unset, None, str] = UNSET,
     account_id: str,
 ) -> Response[GoogleCalendars]:
     """
     Args:
-        field_ (GoogleCalendarsInput): The input for your google calendars
+        sync_token (Union[Unset, None, str]):
+        show_hidden (Union[Unset, None, bool]):
+        show_deleted (Union[Unset, None, bool]):
+        page_token (Union[Unset, None, str]):
         account_id (str):
 
     Raises:
@@ -141,7 +171,10 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         client=client,
-        field_=field_,
+        sync_token=sync_token,
+        show_hidden=show_hidden,
+        show_deleted=show_deleted,
+        page_token=page_token,
         account_id=account_id,
     )
 
@@ -154,12 +187,18 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Client,
-    field_: "GoogleCalendarsInput",
+    sync_token: Union[Unset, None, str] = UNSET,
+    show_hidden: Union[Unset, None, bool] = UNSET,
+    show_deleted: Union[Unset, None, bool] = UNSET,
+    page_token: Union[Unset, None, str] = UNSET,
     account_id: str,
 ) -> Optional[GoogleCalendars]:
     """
     Args:
-        field_ (GoogleCalendarsInput): The input for your google calendars
+        sync_token (Union[Unset, None, str]):
+        show_hidden (Union[Unset, None, bool]):
+        show_deleted (Union[Unset, None, bool]):
+        page_token (Union[Unset, None, str]):
         account_id (str):
 
     Raises:
@@ -173,7 +212,10 @@ async def asyncio(
     return (
         await asyncio_detailed(
             client=client,
-            field_=field_,
+            sync_token=sync_token,
+            show_hidden=show_hidden,
+            show_deleted=show_deleted,
+            page_token=page_token,
             account_id=account_id,
         )
     ).parsed

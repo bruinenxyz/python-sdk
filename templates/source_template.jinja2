@@ -54,48 +54,55 @@ class {{ authenticator_class_name }}(BaseTool):
         """Run the tool asynchronously."""
         return await self.requests_wrapper.aget((query))
 
-
-
-# Import input models (there aren't any for this one)
-
-# Import the resource classes — in the generator we'll need to figure out how to include these names when there are multiple models
-
 {% for resource in resources %}
-
 class {{ resource.class_name }}(BaseTool):
     name = "{{ resource.tool_name }}"
-    # TODO add optionality, description to parameters
-    # TODO maybe update description to talk about the output parser
     description = """{{ resource.tool_description }}
     {% if resource.has_parameters %}
-    Input should be a string query with the requested parameters as key/value pairs, separated by commas.
-    Possible keys for the query are:
+    The input should be a string with two parts, separated by a new line.
+
+    The first line should be the question that you want to know the answer to.
+
+    The second line should be the requested parameters to the {{ source_name.title() }} API, as key/value pairs, separated by commas. 
+    For keys that are not marked as required, if no value is provided, do not include the key.
+    Possible keys for the the second line are:
     
-    {% for parameter in resource.parameters %}"{{ parameter.name }}": "{{ parameter.type }}"
-    {% endfor %}{% else %}
+    {% for parameter in resource.parameters %}"{{ parameter.name }}" ({% if parameter.required %}Required{% else %}Optional{% endif %}), {{ parameter.type }}: "{{ parameter.description }}"
+    {% endfor %}
+    If no parameters are provided, pass "No parameters" as the second line.{% else %}
     Input should be the question that you want to know the answer to.
     {% endif %}
     Output will be the text response from the {{ source_name.title() }} API.
     """
 
     client: AuthenticatedClient
-    {% if has_parameters %}llm: BaseLanguageModel
+    {% if resource.has_parameters %}llm: BaseLanguageModel
     {% endif %}user_id: str
     parse_output: Optional[Callable[[{% if resource.is_array %}List["{{ resource.output_model_name }}"]{% else %}{{ resource.output_model_name }}{% endif %}], str]] = None
 
     def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
         """Run the tool."""
 
-        {% if has_parameters %}parser = PydanticOutputParser(pydantic_object={{ resource.output_model_name }})
+        {% if resource.has_parameters %}class {{ resource.class_name + "InputSchema" }}(BaseModel):
+            {% for parameter in resource.parameters %}{{ parameter.name }}: {% if not parameter.required %}Optional[{% endif %}{{ parameter.python_type }}{% if not parameter.required %}]{% endif %} = Field(description="{{ parameter.description }}")
+            {% endfor %}
+        question, raw_parameters = query.split("\n", 1)
+        
+        parser = PydanticOutputParser(pydantic_object={{ resource.class_name + "InputSchema" }})
         
         prompt = PromptTemplate(
-            template="Parse the provided input string.\n{format_instructions}\n{query}",
+            template="""Parse the provided input string.
+            For values that are not marked as required, if no value is provided, return a null value.
+            {format_instructions}
+            Here is the input:
+            {query}""",
             input_variables=["query"],
-            partial_variables={"format_instructions": parser.get_format_instructions()}
+            partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-        _input = prompt.format_prompt(query=query)
+
+        _input = prompt.format_prompt(query=raw_parameters)
         output = self.llm(_input.to_string())
-        fields = parser.parse(output)
+        parsed_parameters = parser.parse(output)
         
         {% endif %}response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -111,10 +118,11 @@ class {{ resource.class_name }}(BaseTool):
         if account_id == "":
             return "The user has not connected their {{ source_name.title() }} account; you should try authenticating {{ source_name.title() }} first."
         else:
-            # TODO pass additional parameters if required
             response: Response[{% if resource.is_array %}List["{{ resource.output_model_name }}"]{% else %}{{ resource.output_model_name }}{% endif %}] = {{ resource.controller_name }}.sync_detailed(
                 client=self.client,
-                account_id=account_id
+                account_id=account_id{% if resource.has_parameters %},
+                {% for parameter in resource.parameters %}{{ parameter.snake_case_name }}=parsed_parameters.{{ parameter.name }}{% if not loop.last %},
+                {% endif %}{% endfor %}{% endif %}
             )
             if not 200 <= response.status_code < 300:
                 return "Error when attempting to {{ resource.type }} the user's {{ source_name.title() }} {{resource.name }}."
@@ -123,7 +131,7 @@ class {{ resource.class_name }}(BaseTool):
                 {% if resource.is_array %}# Call each response item's to_dict() method and return the result as a JSON string
                 return json.dumps(list(map(lambda x: x.to_dict(), response.parsed))){% else %}return json.dumps(response.parsed.to_dict()){% endif %}
             else:
-                return self.parse_output(response.parsed, query)
+                return self.parse_output(response.parsed, {% if resource.has_parameters %}question{% else %}query{% endif %})
 
     # TODO implement async version
     async def _arun(

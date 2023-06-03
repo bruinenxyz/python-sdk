@@ -10,9 +10,28 @@ from langchain.agents import initialize_agent
 from langchain.llms import OpenAI
 
 from bruinen.src.bruinen.langchain.github import GithubGetProfileTool, GithubGetReposTool
+from bruinen.src.bruinen.langchain.google import GoogleGetDraftsTool
 from bruinen.src.bruinen.client import AuthenticatedClient
 
 client = AuthenticatedClient(base_url='http://localhost:3000', token=bruinen_secret, prefix='', auth_header_name='X-API-Key')
+
+## Google example
+
+user_id = '0a40131b-7c8a-4d0b-a2ba-a99e20db31ae'
+
+input_llm = OpenAI(temperature=0)
+agent_llm = OpenAI(temperature=0)
+def parse_drafts(output, query):
+    print(query)
+    print(output)
+    return output
+google_drafts_tool = GoogleGetDraftsTool(client=client, user_id=user_id, llm=input_llm, parse_output=parse_drafts)
+agent = initialize_agent([google_drafts_tool], agent_llm, agent='chat-zero-shot-react-description', verbose=True)
+result = agent.run("What are my Google drafts?")
+
+exit()
+
+## Github example
 
 # Update to the user ID you want to test with
 user_id = '0a40131b-7c8a-4d0b-a2ba-a99e20db31ae'

@@ -1,19 +1,30 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 import httpx
 
 from ... import errors
 from ...client import Client
 from ...models.google_events import GoogleEvents
-from ...models.google_events_input import GoogleEventsInput
-from ...types import UNSET, Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     *,
     client: Client,
-    field_: "GoogleEventsInput",
+    i_cal_uid: Union[Unset, None, str] = UNSET,
+    sync_token: Union[Unset, None, str] = UNSET,
+    updated_min: Union[Unset, None, str] = UNSET,
+    time_zone: Union[Unset, None, str] = UNSET,
+    time_min: Union[Unset, None, str] = UNSET,
+    time_max: Union[Unset, None, str] = UNSET,
+    single_events: Union[Unset, None, bool] = UNSET,
+    show_deleted: Union[Unset, None, bool] = UNSET,
+    q: Union[Unset, None, str] = UNSET,
+    page_token: Union[Unset, None, str] = UNSET,
+    order_by: Union[Unset, None, str] = UNSET,
+    max_attendees: Union[Unset, None, float] = UNSET,
+    calendar_id: Union[Unset, None, str] = UNSET,
     account_id: str,
 ) -> Dict[str, Any]:
     url = "{}/sources/google/events".format(client.base_url)
@@ -22,9 +33,31 @@ def _get_kwargs(
     cookies: Dict[str, Any] = client.get_cookies()
 
     params: Dict[str, Any] = {}
-    json_field_ = field_.to_dict()
+    params["iCalUID"] = i_cal_uid
 
-    params.update(json_field_)
+    params["syncToken"] = sync_token
+
+    params["updatedMin"] = updated_min
+
+    params["timeZone"] = time_zone
+
+    params["timeMin"] = time_min
+
+    params["timeMax"] = time_max
+
+    params["singleEvents"] = single_events
+
+    params["showDeleted"] = show_deleted
+
+    params["q"] = q
+
+    params["pageToken"] = page_token
+
+    params["orderBy"] = order_by
+
+    params["maxAttendees"] = max_attendees
+
+    params["calendarId"] = calendar_id
 
     params["accountId"] = account_id
 
@@ -64,12 +97,36 @@ def _build_response(*, client: Client, response: httpx.Response) -> Response[Goo
 def sync_detailed(
     *,
     client: Client,
-    field_: "GoogleEventsInput",
+    i_cal_uid: Union[Unset, None, str] = UNSET,
+    sync_token: Union[Unset, None, str] = UNSET,
+    updated_min: Union[Unset, None, str] = UNSET,
+    time_zone: Union[Unset, None, str] = UNSET,
+    time_min: Union[Unset, None, str] = UNSET,
+    time_max: Union[Unset, None, str] = UNSET,
+    single_events: Union[Unset, None, bool] = UNSET,
+    show_deleted: Union[Unset, None, bool] = UNSET,
+    q: Union[Unset, None, str] = UNSET,
+    page_token: Union[Unset, None, str] = UNSET,
+    order_by: Union[Unset, None, str] = UNSET,
+    max_attendees: Union[Unset, None, float] = UNSET,
+    calendar_id: Union[Unset, None, str] = UNSET,
     account_id: str,
 ) -> Response[GoogleEvents]:
     """
     Args:
-        field_ (GoogleEventsInput): The input for your google calendar's events
+        i_cal_uid (Union[Unset, None, str]):
+        sync_token (Union[Unset, None, str]):
+        updated_min (Union[Unset, None, str]):
+        time_zone (Union[Unset, None, str]):
+        time_min (Union[Unset, None, str]):
+        time_max (Union[Unset, None, str]):
+        single_events (Union[Unset, None, bool]):
+        show_deleted (Union[Unset, None, bool]):
+        q (Union[Unset, None, str]):
+        page_token (Union[Unset, None, str]):
+        order_by (Union[Unset, None, str]):
+        max_attendees (Union[Unset, None, float]):
+        calendar_id (Union[Unset, None, str]):
         account_id (str):
 
     Raises:
@@ -82,7 +139,19 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         client=client,
-        field_=field_,
+        i_cal_uid=i_cal_uid,
+        sync_token=sync_token,
+        updated_min=updated_min,
+        time_zone=time_zone,
+        time_min=time_min,
+        time_max=time_max,
+        single_events=single_events,
+        show_deleted=show_deleted,
+        q=q,
+        page_token=page_token,
+        order_by=order_by,
+        max_attendees=max_attendees,
+        calendar_id=calendar_id,
         account_id=account_id,
     )
 
@@ -97,12 +166,36 @@ def sync_detailed(
 def sync(
     *,
     client: Client,
-    field_: "GoogleEventsInput",
+    i_cal_uid: Union[Unset, None, str] = UNSET,
+    sync_token: Union[Unset, None, str] = UNSET,
+    updated_min: Union[Unset, None, str] = UNSET,
+    time_zone: Union[Unset, None, str] = UNSET,
+    time_min: Union[Unset, None, str] = UNSET,
+    time_max: Union[Unset, None, str] = UNSET,
+    single_events: Union[Unset, None, bool] = UNSET,
+    show_deleted: Union[Unset, None, bool] = UNSET,
+    q: Union[Unset, None, str] = UNSET,
+    page_token: Union[Unset, None, str] = UNSET,
+    order_by: Union[Unset, None, str] = UNSET,
+    max_attendees: Union[Unset, None, float] = UNSET,
+    calendar_id: Union[Unset, None, str] = UNSET,
     account_id: str,
 ) -> Optional[GoogleEvents]:
     """
     Args:
-        field_ (GoogleEventsInput): The input for your google calendar's events
+        i_cal_uid (Union[Unset, None, str]):
+        sync_token (Union[Unset, None, str]):
+        updated_min (Union[Unset, None, str]):
+        time_zone (Union[Unset, None, str]):
+        time_min (Union[Unset, None, str]):
+        time_max (Union[Unset, None, str]):
+        single_events (Union[Unset, None, bool]):
+        show_deleted (Union[Unset, None, bool]):
+        q (Union[Unset, None, str]):
+        page_token (Union[Unset, None, str]):
+        order_by (Union[Unset, None, str]):
+        max_attendees (Union[Unset, None, float]):
+        calendar_id (Union[Unset, None, str]):
         account_id (str):
 
     Raises:
@@ -115,7 +208,19 @@ def sync(
 
     return sync_detailed(
         client=client,
-        field_=field_,
+        i_cal_uid=i_cal_uid,
+        sync_token=sync_token,
+        updated_min=updated_min,
+        time_zone=time_zone,
+        time_min=time_min,
+        time_max=time_max,
+        single_events=single_events,
+        show_deleted=show_deleted,
+        q=q,
+        page_token=page_token,
+        order_by=order_by,
+        max_attendees=max_attendees,
+        calendar_id=calendar_id,
         account_id=account_id,
     ).parsed
 
@@ -123,12 +228,36 @@ def sync(
 async def asyncio_detailed(
     *,
     client: Client,
-    field_: "GoogleEventsInput",
+    i_cal_uid: Union[Unset, None, str] = UNSET,
+    sync_token: Union[Unset, None, str] = UNSET,
+    updated_min: Union[Unset, None, str] = UNSET,
+    time_zone: Union[Unset, None, str] = UNSET,
+    time_min: Union[Unset, None, str] = UNSET,
+    time_max: Union[Unset, None, str] = UNSET,
+    single_events: Union[Unset, None, bool] = UNSET,
+    show_deleted: Union[Unset, None, bool] = UNSET,
+    q: Union[Unset, None, str] = UNSET,
+    page_token: Union[Unset, None, str] = UNSET,
+    order_by: Union[Unset, None, str] = UNSET,
+    max_attendees: Union[Unset, None, float] = UNSET,
+    calendar_id: Union[Unset, None, str] = UNSET,
     account_id: str,
 ) -> Response[GoogleEvents]:
     """
     Args:
-        field_ (GoogleEventsInput): The input for your google calendar's events
+        i_cal_uid (Union[Unset, None, str]):
+        sync_token (Union[Unset, None, str]):
+        updated_min (Union[Unset, None, str]):
+        time_zone (Union[Unset, None, str]):
+        time_min (Union[Unset, None, str]):
+        time_max (Union[Unset, None, str]):
+        single_events (Union[Unset, None, bool]):
+        show_deleted (Union[Unset, None, bool]):
+        q (Union[Unset, None, str]):
+        page_token (Union[Unset, None, str]):
+        order_by (Union[Unset, None, str]):
+        max_attendees (Union[Unset, None, float]):
+        calendar_id (Union[Unset, None, str]):
         account_id (str):
 
     Raises:
@@ -141,7 +270,19 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         client=client,
-        field_=field_,
+        i_cal_uid=i_cal_uid,
+        sync_token=sync_token,
+        updated_min=updated_min,
+        time_zone=time_zone,
+        time_min=time_min,
+        time_max=time_max,
+        single_events=single_events,
+        show_deleted=show_deleted,
+        q=q,
+        page_token=page_token,
+        order_by=order_by,
+        max_attendees=max_attendees,
+        calendar_id=calendar_id,
         account_id=account_id,
     )
 
@@ -154,12 +295,36 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Client,
-    field_: "GoogleEventsInput",
+    i_cal_uid: Union[Unset, None, str] = UNSET,
+    sync_token: Union[Unset, None, str] = UNSET,
+    updated_min: Union[Unset, None, str] = UNSET,
+    time_zone: Union[Unset, None, str] = UNSET,
+    time_min: Union[Unset, None, str] = UNSET,
+    time_max: Union[Unset, None, str] = UNSET,
+    single_events: Union[Unset, None, bool] = UNSET,
+    show_deleted: Union[Unset, None, bool] = UNSET,
+    q: Union[Unset, None, str] = UNSET,
+    page_token: Union[Unset, None, str] = UNSET,
+    order_by: Union[Unset, None, str] = UNSET,
+    max_attendees: Union[Unset, None, float] = UNSET,
+    calendar_id: Union[Unset, None, str] = UNSET,
     account_id: str,
 ) -> Optional[GoogleEvents]:
     """
     Args:
-        field_ (GoogleEventsInput): The input for your google calendar's events
+        i_cal_uid (Union[Unset, None, str]):
+        sync_token (Union[Unset, None, str]):
+        updated_min (Union[Unset, None, str]):
+        time_zone (Union[Unset, None, str]):
+        time_min (Union[Unset, None, str]):
+        time_max (Union[Unset, None, str]):
+        single_events (Union[Unset, None, bool]):
+        show_deleted (Union[Unset, None, bool]):
+        q (Union[Unset, None, str]):
+        page_token (Union[Unset, None, str]):
+        order_by (Union[Unset, None, str]):
+        max_attendees (Union[Unset, None, float]):
+        calendar_id (Union[Unset, None, str]):
         account_id (str):
 
     Raises:
@@ -173,7 +338,19 @@ async def asyncio(
     return (
         await asyncio_detailed(
             client=client,
-            field_=field_,
+            i_cal_uid=i_cal_uid,
+            sync_token=sync_token,
+            updated_min=updated_min,
+            time_zone=time_zone,
+            time_min=time_min,
+            time_max=time_max,
+            single_events=single_events,
+            show_deleted=show_deleted,
+            q=q,
+            page_token=page_token,
+            order_by=order_by,
+            max_attendees=max_attendees,
+            calendar_id=calendar_id,
             account_id=account_id,
         )
     ).parsed

@@ -6,14 +6,13 @@ import httpx
 from ... import errors
 from ...client import Client
 from ...models.google_thread import GoogleThread
-from ...models.google_thread_input import GoogleThreadInput
 from ...types import UNSET, Response
 
 
 def _get_kwargs(
     *,
     client: Client,
-    field_: "GoogleThreadInput",
+    thread_id: str,
     account_id: str,
 ) -> Dict[str, Any]:
     url = "{}/sources/google/thread".format(client.base_url)
@@ -22,9 +21,7 @@ def _get_kwargs(
     cookies: Dict[str, Any] = client.get_cookies()
 
     params: Dict[str, Any] = {}
-    json_field_ = field_.to_dict()
-
-    params.update(json_field_)
+    params["threadId"] = thread_id
 
     params["accountId"] = account_id
 
@@ -64,12 +61,12 @@ def _build_response(*, client: Client, response: httpx.Response) -> Response[Goo
 def sync_detailed(
     *,
     client: Client,
-    field_: "GoogleThreadInput",
+    thread_id: str,
     account_id: str,
 ) -> Response[GoogleThread]:
     """
     Args:
-        field_ (GoogleThreadInput): The input for your google thread
+        thread_id (str):
         account_id (str):
 
     Raises:
@@ -82,7 +79,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         client=client,
-        field_=field_,
+        thread_id=thread_id,
         account_id=account_id,
     )
 
@@ -97,12 +94,12 @@ def sync_detailed(
 def sync(
     *,
     client: Client,
-    field_: "GoogleThreadInput",
+    thread_id: str,
     account_id: str,
 ) -> Optional[GoogleThread]:
     """
     Args:
-        field_ (GoogleThreadInput): The input for your google thread
+        thread_id (str):
         account_id (str):
 
     Raises:
@@ -115,7 +112,7 @@ def sync(
 
     return sync_detailed(
         client=client,
-        field_=field_,
+        thread_id=thread_id,
         account_id=account_id,
     ).parsed
 
@@ -123,12 +120,12 @@ def sync(
 async def asyncio_detailed(
     *,
     client: Client,
-    field_: "GoogleThreadInput",
+    thread_id: str,
     account_id: str,
 ) -> Response[GoogleThread]:
     """
     Args:
-        field_ (GoogleThreadInput): The input for your google thread
+        thread_id (str):
         account_id (str):
 
     Raises:
@@ -141,7 +138,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         client=client,
-        field_=field_,
+        thread_id=thread_id,
         account_id=account_id,
     )
 
@@ -154,12 +151,12 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Client,
-    field_: "GoogleThreadInput",
+    thread_id: str,
     account_id: str,
 ) -> Optional[GoogleThread]:
     """
     Args:
-        field_ (GoogleThreadInput): The input for your google thread
+        thread_id (str):
         account_id (str):
 
     Raises:
@@ -173,7 +170,7 @@ async def asyncio(
     return (
         await asyncio_detailed(
             client=client,
-            field_=field_,
+            thread_id=thread_id,
             account_id=account_id,
         )
     ).parsed
