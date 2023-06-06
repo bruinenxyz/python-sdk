@@ -57,17 +57,8 @@ class GithubAuthenticatorTool(BaseTool):
         return await self.requests_wrapper.aget((query))
 
 
-
-# Import input models (there aren't any for this one)
-
-# Import the resource classes — in the generator we'll need to figure out how to include these names when there are multiple models
-
-
-
 class GithubGetReposTool(BaseTool):
     name = "Github Get Repos Tool"
-    # TODO add optionality, description to parameters
-    # TODO maybe update description to talk about the output parser
     description = """Useful for when you need to get a user's Github repos.
     
     Input should be the question that you want to know the answer to.
@@ -96,7 +87,6 @@ class GithubGetReposTool(BaseTool):
         if account_id == "":
             return "The user has not connected their Github account; you should try authenticating Github first."
         else:
-            # TODO pass additional parameters if required
             response: Response[List["GithubRepo"]] = github_controller_repos.sync_detailed(
                 client=self.client,
                 account_id=account_id
@@ -120,11 +110,8 @@ class GithubGetReposTool(BaseTool):
         return await self.requests_wrapper.aget((query))
 
 
-
 class GithubGetProfileTool(BaseTool):
     name = "Github Get Profile Tool"
-    # TODO add optionality, description to parameters
-    # TODO maybe update description to talk about the output parser
     description = """Useful for when you need to get a user's Github profile.
     
     Input should be the question that you want to know the answer to.
@@ -153,7 +140,6 @@ class GithubGetProfileTool(BaseTool):
         if account_id == "":
             return "The user has not connected their Github account; you should try authenticating Github first."
         else:
-            # TODO pass additional parameters if required
             response: Response[GithubProfile] = github_controller_profile.sync_detailed(
                 client=self.client,
                 account_id=account_id
