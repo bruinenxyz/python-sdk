@@ -63,20 +63,19 @@ class GoogleAuthenticatorTool(BaseTool):
         run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
         """Run the tool."""
-        response: Response[Auth] = get_user_auth_token(client=self.client, user_id=self.user_id)
-        auth_token = json.loads(response.content)
-
-        # TODO chat with Tevon about how this URL should be formatted
+        response: Response[Auth] = get_user_auth_token.sync_detailed(client=self.client, user_id=self.user_id)
+        auth_token = response.parsed.access_token
+        # TODO decide how this URL should be formatted
         return self.server + '?userToken=' + auth_token + '&source=google'
 
-    # TODO implement this later
+    # TODO implement async version
     async def _arun(
         self,
-        user_id: str,
+        query: str,
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetProfileTool(BaseTool):
@@ -128,14 +127,15 @@ class GoogleGetProfileTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetDraftsTool(BaseTool):
     name = "Google Get Drafts Tool"
     description = """Useful for when you need to get a user's Google drafts.
     
-    The input should be a string with two parts, separated by a new line.
+    The input should be a string with two parts, separated by a new line character '\n'.
+    Always include the '\n' in the input, even if the second line is empty.
 
     The first line should be the question that you want to know the answer to.
 
@@ -215,14 +215,15 @@ class GoogleGetDraftsTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetDraftTool(BaseTool):
     name = "Google Get Draft Tool"
     description = """Useful for when you need to get a user's Google draft.
     
-    The input should be a string with two parts, separated by a new line.
+    The input should be a string with two parts, separated by a new line character '\n'.
+    Always include the '\n' in the input, even if the second line is empty.
 
     The first line should be the question that you want to know the answer to.
 
@@ -299,7 +300,7 @@ class GoogleGetDraftTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetLabelsTool(BaseTool):
@@ -351,14 +352,15 @@ class GoogleGetLabelsTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetLabelTool(BaseTool):
     name = "Google Get Label Tool"
     description = """Useful for when you need to get a user's Google label.
     
-    The input should be a string with two parts, separated by a new line.
+    The input should be a string with two parts, separated by a new line character '\n'.
+    Always include the '\n' in the input, even if the second line is empty.
 
     The first line should be the question that you want to know the answer to.
 
@@ -435,14 +437,15 @@ class GoogleGetLabelTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetMessagesTool(BaseTool):
     name = "Google Get Messages Tool"
     description = """Useful for when you need to get a user's Google messages.
     
-    The input should be a string with two parts, separated by a new line.
+    The input should be a string with two parts, separated by a new line character '\n'.
+    Always include the '\n' in the input, even if the second line is empty.
 
     The first line should be the question that you want to know the answer to.
 
@@ -525,14 +528,15 @@ class GoogleGetMessagesTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetMessageTool(BaseTool):
     name = "Google Get Message Tool"
     description = """Useful for when you need to get a user's Google message.
     
-    The input should be a string with two parts, separated by a new line.
+    The input should be a string with two parts, separated by a new line character '\n'.
+    Always include the '\n' in the input, even if the second line is empty.
 
     The first line should be the question that you want to know the answer to.
 
@@ -609,14 +613,15 @@ class GoogleGetMessageTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetThreadsTool(BaseTool):
     name = "Google Get Threads Tool"
     description = """Useful for when you need to get a user's Google threads.
     
-    The input should be a string with two parts, separated by a new line.
+    The input should be a string with two parts, separated by a new line character '\n'.
+    Always include the '\n' in the input, even if the second line is empty.
 
     The first line should be the question that you want to know the answer to.
 
@@ -699,14 +704,15 @@ class GoogleGetThreadsTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetThreadTool(BaseTool):
     name = "Google Get Thread Tool"
     description = """Useful for when you need to get a user's Google thread.
     
-    The input should be a string with two parts, separated by a new line.
+    The input should be a string with two parts, separated by a new line character '\n'.
+    Always include the '\n' in the input, even if the second line is empty.
 
     The first line should be the question that you want to know the answer to.
 
@@ -783,14 +789,15 @@ class GoogleGetThreadTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetCalendarsTool(BaseTool):
     name = "Google Get Calendars Tool"
     description = """Useful for when you need to get a user's Google calendars.
     
-    The input should be a string with two parts, separated by a new line.
+    The input should be a string with two parts, separated by a new line character '\n'.
+    Always include the '\n' in the input, even if the second line is empty.
 
     The first line should be the question that you want to know the answer to.
 
@@ -876,14 +883,15 @@ class GoogleGetCalendarsTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetCalendarTool(BaseTool):
     name = "Google Get Calendar Tool"
     description = """Useful for when you need to get a user's Google calendar.
     
-    The input should be a string with two parts, separated by a new line.
+    The input should be a string with two parts, separated by a new line character '\n'.
+    Always include the '\n' in the input, even if the second line is empty.
 
     The first line should be the question that you want to know the answer to.
 
@@ -960,14 +968,15 @@ class GoogleGetCalendarTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetEventsTool(BaseTool):
     name = "Google Get Events Tool"
     description = """Useful for when you need to get a user's Google events.
     
-    The input should be a string with two parts, separated by a new line.
+    The input should be a string with two parts, separated by a new line character '\n'.
+    Always include the '\n' in the input, even if the second line is empty.
 
     The first line should be the question that you want to know the answer to.
 
@@ -1080,14 +1089,15 @@ class GoogleGetEventsTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GoogleGetEventTool(BaseTool):
     name = "Google Get Event Tool"
     description = """Useful for when you need to get a user's Google event.
     
-    The input should be a string with two parts, separated by a new line.
+    The input should be a string with two parts, separated by a new line character '\n'.
+    Always include the '\n' in the input, even if the second line is empty.
 
     The first line should be the question that you want to know the answer to.
 
@@ -1170,5 +1180,5 @@ class GoogleGetEventTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 

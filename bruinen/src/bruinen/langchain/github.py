@@ -41,20 +41,19 @@ class GithubAuthenticatorTool(BaseTool):
         run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
         """Run the tool."""
-        response: Response[Auth] = get_user_auth_token(client=self.client, user_id=self.user_id)
-        auth_token = json.loads(response.content)
+        response: Response[Auth] = get_user_auth_token.sync_detailed(client=self.client, user_id=self.user_id)
+        auth_token = response.parsed.access_token
+        # TODO decide how this URL should be formatted
+        return self.server + '?userToken=' + auth_token + '&source=google'
 
-        # TODO chat with Tevon about how this URL should be formatted
-        return self.server + '?userToken=' + auth_token + '&source=github'
-
-    # TODO implement this later
+    # TODO implement async version
     async def _arun(
         self,
-        user_id: str,
+        query: str,
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GithubGetReposTool(BaseTool):
@@ -107,7 +106,7 @@ class GithubGetReposTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
 
 class GithubGetProfileTool(BaseTool):
@@ -159,5 +158,5 @@ class GithubGetProfileTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Run the tool asynchronously."""
-        return await self.requests_wrapper.aget((query))
+        return await self._run(query, run_manager)
 
