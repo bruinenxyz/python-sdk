@@ -1,6 +1,6 @@
 from jinja2 import Template
 import requests
-from openapi_python_client.utils import snake_case
+from openapi_python_client.utils import snake_case, pascal_case
 
 with open('templates/source_template.jinja2') as f:
     source_template = Template(f.read())
@@ -32,7 +32,8 @@ for source in sources:
     for path in json_data['paths'].keys():
         prefix = f'/sources/{source_name}/'
         if path.startswith(prefix):
-            resource_name = path[len(prefix):]
+            resource_name = snake_case(path[len(prefix):])
+            pascal_case_resource_name = pascal_case(resource_name)
             if resource_name == 'callback':
                 continue
 
@@ -82,11 +83,12 @@ for source in sources:
 
                 data['resources'].append({
                     'name': resource_name,
+                    'pascal_name': pascal_case_resource_name,
                     'type': resource_method,
                     'has_parameters': has_parameters,
                     'parameters': resource_parameters,
-                    'class_name': source_name.title() + resource_method.title() + resource_name.title() + 'Tool',
-                    'tool_name': source_name.title() + ' ' + resource_method.title() + ' ' + resource_name.title() + ' Tool',
+                    'class_name': source_name.title() + resource_method.title() + pascal_case_resource_name + 'Tool',
+                    'tool_name': source_name.title() + ' ' + resource_method.title() + ' ' + pascal_case_resource_name + ' Tool',
                     'tool_description': resource_description,
                     'output_model_name': output_model_name,
                     'is_array': is_array,

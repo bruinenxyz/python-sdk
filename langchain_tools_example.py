@@ -27,7 +27,8 @@ def parse_drafts(output, query):
     return output
 google_drafts_tool = GoogleGetDraftsTool(client=client, user_id=user_id, llm=input_llm, parse_output=parse_drafts)
 agent = initialize_agent([google_drafts_tool], agent_llm, agent='chat-zero-shot-react-description', verbose=True)
-result = agent.run("What are my Google drafts?")
+result = agent.run("What are my Google drafts with q=null and pageToken='1'?")
+print(result)
 
 exit()
 
@@ -53,6 +54,3 @@ github_profile_tool = GithubGetProfileTool(client=client, user_id=user_id, parse
 agent_llm = OpenAI(temperature=0)
 agent = initialize_agent([github_repos_tool, github_profile_tool], agent_llm, agent='chat-zero-shot-react-description', verbose=True)
 result = agent.run("What does my Github profile look like?")
-
-# Things to do:
-#   Handle input (query, parameters, etc.)

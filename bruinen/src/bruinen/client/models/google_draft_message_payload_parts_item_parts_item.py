@@ -5,34 +5,33 @@ import attr
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.google_draft_message_payload_parts_item_body import GoogleDraftMessagePayloadPartsItemBody
-    from ..models.google_draft_message_payload_parts_item_headers_item import (
-        GoogleDraftMessagePayloadPartsItemHeadersItem,
+    from ..models.google_draft_message_payload_parts_item_parts_item_body import (
+        GoogleDraftMessagePayloadPartsItemPartsItemBody,
     )
-    from ..models.google_draft_message_payload_parts_item_parts_item import GoogleDraftMessagePayloadPartsItemPartsItem
+    from ..models.google_draft_message_payload_parts_item_parts_item_headers_item import (
+        GoogleDraftMessagePayloadPartsItemPartsItemHeadersItem,
+    )
 
 
-T = TypeVar("T", bound="GoogleDraftMessagePayloadPartsItem")
+T = TypeVar("T", bound="GoogleDraftMessagePayloadPartsItemPartsItem")
 
 
 @attr.s(auto_attribs=True)
-class GoogleDraftMessagePayloadPartsItem:
+class GoogleDraftMessagePayloadPartsItemPartsItem:
     """
     Attributes:
         part_id (Union[Unset, str]): The partId of the part
         mime_type (Union[Unset, str]): The mimeType of the part
         filename (Union[Unset, str]): The filename of the part
-        headers (Union[Unset, List['GoogleDraftMessagePayloadPartsItemHeadersItem']]): The headers of the part
-        body (Union[Unset, GoogleDraftMessagePayloadPartsItemBody]): The body of the part
-        parts (Union[Unset, List['GoogleDraftMessagePayloadPartsItemPartsItem']]): The parts of the part
+        headers (Union[Unset, List['GoogleDraftMessagePayloadPartsItemPartsItemHeadersItem']]): The headers of the part
+        body (Union[Unset, GoogleDraftMessagePayloadPartsItemPartsItemBody]): The body of the part
     """
 
     part_id: Union[Unset, str] = UNSET
     mime_type: Union[Unset, str] = UNSET
     filename: Union[Unset, str] = UNSET
-    headers: Union[Unset, List["GoogleDraftMessagePayloadPartsItemHeadersItem"]] = UNSET
-    body: Union[Unset, "GoogleDraftMessagePayloadPartsItemBody"] = UNSET
-    parts: Union[Unset, List["GoogleDraftMessagePayloadPartsItemPartsItem"]] = UNSET
+    headers: Union[Unset, List["GoogleDraftMessagePayloadPartsItemPartsItemHeadersItem"]] = UNSET
+    body: Union[Unset, "GoogleDraftMessagePayloadPartsItemPartsItemBody"] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -51,14 +50,6 @@ class GoogleDraftMessagePayloadPartsItem:
         if not isinstance(self.body, Unset):
             body = self.body.to_dict()
 
-        parts: Union[Unset, List[Dict[str, Any]]] = UNSET
-        if not isinstance(self.parts, Unset):
-            parts = []
-            for parts_item_data in self.parts:
-                parts_item = parts_item_data.to_dict()
-
-                parts.append(parts_item)
-
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
@@ -72,19 +63,16 @@ class GoogleDraftMessagePayloadPartsItem:
             field_dict["headers"] = headers
         if body is not UNSET:
             field_dict["body"] = body
-        if parts is not UNSET:
-            field_dict["parts"] = parts
 
         return field_dict
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.google_draft_message_payload_parts_item_body import GoogleDraftMessagePayloadPartsItemBody
-        from ..models.google_draft_message_payload_parts_item_headers_item import (
-            GoogleDraftMessagePayloadPartsItemHeadersItem,
+        from ..models.google_draft_message_payload_parts_item_parts_item_body import (
+            GoogleDraftMessagePayloadPartsItemPartsItemBody,
         )
-        from ..models.google_draft_message_payload_parts_item_parts_item import (
-            GoogleDraftMessagePayloadPartsItemPartsItem,
+        from ..models.google_draft_message_payload_parts_item_parts_item_headers_item import (
+            GoogleDraftMessagePayloadPartsItemPartsItemHeadersItem,
         )
 
         d = src_dict.copy()
@@ -97,35 +85,27 @@ class GoogleDraftMessagePayloadPartsItem:
         headers = []
         _headers = d.pop("headers", UNSET) or UNSET
         for headers_item_data in _headers or []:
-            headers_item = GoogleDraftMessagePayloadPartsItemHeadersItem.from_dict(headers_item_data)
+            headers_item = GoogleDraftMessagePayloadPartsItemPartsItemHeadersItem.from_dict(headers_item_data)
 
             headers.append(headers_item)
 
         _body = d.pop("body", UNSET) or UNSET
-        body: Union[Unset, GoogleDraftMessagePayloadPartsItemBody]
+        body: Union[Unset, GoogleDraftMessagePayloadPartsItemPartsItemBody]
         if isinstance(_body, Unset):
             body = UNSET
         else:
-            body = GoogleDraftMessagePayloadPartsItemBody.from_dict(_body)
+            body = GoogleDraftMessagePayloadPartsItemPartsItemBody.from_dict(_body)
 
-        parts = []
-        _parts = d.pop("parts", UNSET) or UNSET
-        for parts_item_data in _parts or []:
-            parts_item = GoogleDraftMessagePayloadPartsItemPartsItem.from_dict(parts_item_data)
-
-            parts.append(parts_item)
-
-        google_draft_message_payload_parts_item = cls(
+        google_draft_message_payload_parts_item_parts_item = cls(
             part_id=part_id,
             mime_type=mime_type,
             filename=filename,
             headers=headers,
             body=body,
-            parts=parts,
         )
 
-        google_draft_message_payload_parts_item.additional_properties = d
-        return google_draft_message_payload_parts_item
+        google_draft_message_payload_parts_item_parts_item.additional_properties = d
+        return google_draft_message_payload_parts_item_parts_item
 
     @property
     def additional_keys(self) -> List[str]:

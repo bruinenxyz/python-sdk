@@ -21,6 +21,8 @@ from ..client.api.sources import google_controller_drafts
 from ..client.models import GoogleDrafts
 from ..client.api.sources import google_controller_draft
 from ..client.models import GoogleDraft
+from ..client.api.sources import google_controller_parsed_draft
+from ..client.models import GoogleParsedDraft
 from ..client.api.sources import google_controller_labels
 from ..client.models import GoogleLabels
 from ..client.api.sources import google_controller_label
@@ -29,10 +31,14 @@ from ..client.api.sources import google_controller_messages
 from ..client.models import GoogleMessages
 from ..client.api.sources import google_controller_message
 from ..client.models import GoogleMessage
+from ..client.api.sources import google_controller_parsed_message
+from ..client.models import GoogleParsedMessage
 from ..client.api.sources import google_controller_threads
 from ..client.models import GoogleThreads
 from ..client.api.sources import google_controller_thread
 from ..client.models import GoogleThread
+from ..client.api.sources import google_controller_parsed_thread
+from ..client.models import GoogleParsedThread
 from ..client.api.sources import google_controller_calendars
 from ..client.models import GoogleCalendars
 from ..client.api.sources import google_controller_calendar
@@ -134,19 +140,9 @@ class GoogleGetDraftsTool(BaseTool):
     name = "Google Get Drafts Tool"
     description = """Useful for when you need to get a user's Google drafts.
     
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the Google API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
     
-    "q" (Optional), string: "The query for your drafts"
-    "pageToken" (Optional), string: "The page token for your drafts"
-    
-    If no parameters are provided, pass "No parameters" as the second line.
     Output will be the text response from the Google API.
     """
 
@@ -162,7 +158,6 @@ class GoogleGetDraftsTool(BaseTool):
             q: Optional[str] = Field(description="The query for your drafts")
             pageToken: Optional[str] = Field(description="The page token for your drafts")
             
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object=GoogleGetDraftsToolInputSchema)
         
@@ -176,7 +171,7 @@ class GoogleGetDraftsTool(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -206,7 +201,7 @@ class GoogleGetDraftsTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed, question)
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -222,18 +217,9 @@ class GoogleGetDraftTool(BaseTool):
     name = "Google Get Draft Tool"
     description = """Useful for when you need to get a user's Google draft.
     
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the Google API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
     
-    "draftId" (Required), string: "The id of the draft"
-    
-    If no parameters are provided, pass "No parameters" as the second line.
     Output will be the text response from the Google API.
     """
 
@@ -248,7 +234,6 @@ class GoogleGetDraftTool(BaseTool):
         class GoogleGetDraftToolInputSchema(BaseModel):
             draftId: str = Field(description="The id of the draft")
             
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object=GoogleGetDraftToolInputSchema)
         
@@ -262,7 +247,7 @@ class GoogleGetDraftTool(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -291,7 +276,82 @@ class GoogleGetDraftTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed, question)
+                return self.parse_output(response.parsed, query)
+
+    # TODO implement async version
+    async def _arun(
+        self,
+        query: str,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Run the tool asynchronously."""
+        return await self._run(query, run_manager)
+
+
+class GoogleGetParsedDraftTool(BaseTool):
+    name = "Google Get ParsedDraft Tool"
+    description = """Useful for when you need to get a user's Google parsed_draft.
+    
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
+    
+    Output will be the text response from the Google API.
+    """
+
+    client: AuthenticatedClient
+    llm: BaseLanguageModel
+    user_id: str
+    parse_output: Optional[Callable[[GoogleParsedDraft], str]] = None
+
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+
+        class GoogleGetParsedDraftToolInputSchema(BaseModel):
+            draftId: str = Field(description="The id of the draft")
+            
+        
+        parser = PydanticOutputParser(pydantic_object=GoogleGetParsedDraftToolInputSchema)
+        
+        prompt = PromptTemplate(
+            template="""Parse the provided input string.
+            For values that are not marked as required, if no value is provided, return a null value.
+            {format_instructions}
+            Here is the input:
+            {query}""",
+            input_variables=["query"],
+            partial_variables={"format_instructions": parser.get_format_instructions()},
+        )
+
+        _input = prompt.format_prompt(query=query)
+        output = self.llm(_input.to_string())
+        parsed_parameters = parser.parse(output)
+        
+        response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
+            client=self.client, user_id=self.user_id
+        )
+        if not 200 <= response.status_code < 300:
+            return "Error pulling the user's Google account."
+        accounts: List["ReturnedAccountDto"] = response.parsed
+
+        account_id = ""
+        for account in accounts:
+            if account.source == "google":
+                account_id = account.id
+        if account_id == "":
+            return "The user has not connected their Google account; you should try authenticating Google first."
+        else:
+            response: Response[GoogleParsedDraft] = google_controller_parsed_draft.sync_detailed(
+                client=self.client,
+                account_id=account_id,
+                draft_id=parsed_parameters.draftId
+            )
+            if not 200 <= response.status_code < 300:
+                return "Error when attempting to get the user's Google parsed_draft."
+
+            if self.parse_output is None:
+                return json.dumps(response.parsed.to_dict())
+            else:
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -359,18 +419,9 @@ class GoogleGetLabelTool(BaseTool):
     name = "Google Get Label Tool"
     description = """Useful for when you need to get a user's Google label.
     
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the Google API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
     
-    "labelId" (Required), string: "The id of the label"
-    
-    If no parameters are provided, pass "No parameters" as the second line.
     Output will be the text response from the Google API.
     """
 
@@ -385,7 +436,6 @@ class GoogleGetLabelTool(BaseTool):
         class GoogleGetLabelToolInputSchema(BaseModel):
             labelId: str = Field(description="The id of the label")
             
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object=GoogleGetLabelToolInputSchema)
         
@@ -399,7 +449,7 @@ class GoogleGetLabelTool(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -428,7 +478,7 @@ class GoogleGetLabelTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed, question)
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -444,20 +494,9 @@ class GoogleGetMessagesTool(BaseTool):
     name = "Google Get Messages Tool"
     description = """Useful for when you need to get a user's Google messages.
     
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the Google API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
     
-    "q" (Optional), string: "The query of the messages"
-    "pageToken" (Optional), string: "The pageToken of the messages"
-    "labelIds" (Optional), string: "The labelIds of the messages"
-    
-    If no parameters are provided, pass "No parameters" as the second line.
     Output will be the text response from the Google API.
     """
 
@@ -474,7 +513,6 @@ class GoogleGetMessagesTool(BaseTool):
             pageToken: Optional[str] = Field(description="The pageToken of the messages")
             labelIds: Optional[str] = Field(description="The labelIds of the messages")
             
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object=GoogleGetMessagesToolInputSchema)
         
@@ -488,7 +526,7 @@ class GoogleGetMessagesTool(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -519,7 +557,7 @@ class GoogleGetMessagesTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed, question)
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -535,18 +573,9 @@ class GoogleGetMessageTool(BaseTool):
     name = "Google Get Message Tool"
     description = """Useful for when you need to get a user's Google message.
     
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the Google API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
     
-    "messageId" (Required), string: "The id of the message"
-    
-    If no parameters are provided, pass "No parameters" as the second line.
     Output will be the text response from the Google API.
     """
 
@@ -561,7 +590,6 @@ class GoogleGetMessageTool(BaseTool):
         class GoogleGetMessageToolInputSchema(BaseModel):
             messageId: str = Field(description="The id of the message")
             
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object=GoogleGetMessageToolInputSchema)
         
@@ -575,7 +603,7 @@ class GoogleGetMessageTool(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -604,7 +632,82 @@ class GoogleGetMessageTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed, question)
+                return self.parse_output(response.parsed, query)
+
+    # TODO implement async version
+    async def _arun(
+        self,
+        query: str,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Run the tool asynchronously."""
+        return await self._run(query, run_manager)
+
+
+class GoogleGetParsedMessageTool(BaseTool):
+    name = "Google Get ParsedMessage Tool"
+    description = """Useful for when you need to get a user's Google parsed_message.
+    
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
+    
+    Output will be the text response from the Google API.
+    """
+
+    client: AuthenticatedClient
+    llm: BaseLanguageModel
+    user_id: str
+    parse_output: Optional[Callable[[GoogleParsedMessage], str]] = None
+
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+
+        class GoogleGetParsedMessageToolInputSchema(BaseModel):
+            messageId: str = Field(description="The id of the message")
+            
+        
+        parser = PydanticOutputParser(pydantic_object=GoogleGetParsedMessageToolInputSchema)
+        
+        prompt = PromptTemplate(
+            template="""Parse the provided input string.
+            For values that are not marked as required, if no value is provided, return a null value.
+            {format_instructions}
+            Here is the input:
+            {query}""",
+            input_variables=["query"],
+            partial_variables={"format_instructions": parser.get_format_instructions()},
+        )
+
+        _input = prompt.format_prompt(query=query)
+        output = self.llm(_input.to_string())
+        parsed_parameters = parser.parse(output)
+        
+        response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
+            client=self.client, user_id=self.user_id
+        )
+        if not 200 <= response.status_code < 300:
+            return "Error pulling the user's Google account."
+        accounts: List["ReturnedAccountDto"] = response.parsed
+
+        account_id = ""
+        for account in accounts:
+            if account.source == "google":
+                account_id = account.id
+        if account_id == "":
+            return "The user has not connected their Google account; you should try authenticating Google first."
+        else:
+            response: Response[GoogleParsedMessage] = google_controller_parsed_message.sync_detailed(
+                client=self.client,
+                account_id=account_id,
+                message_id=parsed_parameters.messageId
+            )
+            if not 200 <= response.status_code < 300:
+                return "Error when attempting to get the user's Google parsed_message."
+
+            if self.parse_output is None:
+                return json.dumps(response.parsed.to_dict())
+            else:
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -620,20 +723,9 @@ class GoogleGetThreadsTool(BaseTool):
     name = "Google Get Threads Tool"
     description = """Useful for when you need to get a user's Google threads.
     
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the Google API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
     
-    "q" (Optional), string: "The query of the threads"
-    "pageToken" (Optional), string: "The pageToken of the threads"
-    "labelIds" (Optional), string: "The labelIds of the threads"
-    
-    If no parameters are provided, pass "No parameters" as the second line.
     Output will be the text response from the Google API.
     """
 
@@ -650,7 +742,6 @@ class GoogleGetThreadsTool(BaseTool):
             pageToken: Optional[str] = Field(description="The pageToken of the threads")
             labelIds: Optional[str] = Field(description="The labelIds of the threads")
             
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object=GoogleGetThreadsToolInputSchema)
         
@@ -664,7 +755,7 @@ class GoogleGetThreadsTool(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -695,7 +786,7 @@ class GoogleGetThreadsTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed, question)
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -711,18 +802,9 @@ class GoogleGetThreadTool(BaseTool):
     name = "Google Get Thread Tool"
     description = """Useful for when you need to get a user's Google thread.
     
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the Google API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
     
-    "threadId" (Required), string: "The id of the thread"
-    
-    If no parameters are provided, pass "No parameters" as the second line.
     Output will be the text response from the Google API.
     """
 
@@ -737,7 +819,6 @@ class GoogleGetThreadTool(BaseTool):
         class GoogleGetThreadToolInputSchema(BaseModel):
             threadId: str = Field(description="The id of the thread")
             
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object=GoogleGetThreadToolInputSchema)
         
@@ -751,7 +832,7 @@ class GoogleGetThreadTool(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -780,7 +861,82 @@ class GoogleGetThreadTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed, question)
+                return self.parse_output(response.parsed, query)
+
+    # TODO implement async version
+    async def _arun(
+        self,
+        query: str,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Run the tool asynchronously."""
+        return await self._run(query, run_manager)
+
+
+class GoogleGetParsedThreadTool(BaseTool):
+    name = "Google Get ParsedThread Tool"
+    description = """Useful for when you need to get a user's Google parsed_thread.
+    
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
+    
+    Output will be the text response from the Google API.
+    """
+
+    client: AuthenticatedClient
+    llm: BaseLanguageModel
+    user_id: str
+    parse_output: Optional[Callable[[GoogleParsedThread], str]] = None
+
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+
+        class GoogleGetParsedThreadToolInputSchema(BaseModel):
+            threadId: str = Field(description="The id of the thread")
+            
+        
+        parser = PydanticOutputParser(pydantic_object=GoogleGetParsedThreadToolInputSchema)
+        
+        prompt = PromptTemplate(
+            template="""Parse the provided input string.
+            For values that are not marked as required, if no value is provided, return a null value.
+            {format_instructions}
+            Here is the input:
+            {query}""",
+            input_variables=["query"],
+            partial_variables={"format_instructions": parser.get_format_instructions()},
+        )
+
+        _input = prompt.format_prompt(query=query)
+        output = self.llm(_input.to_string())
+        parsed_parameters = parser.parse(output)
+        
+        response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
+            client=self.client, user_id=self.user_id
+        )
+        if not 200 <= response.status_code < 300:
+            return "Error pulling the user's Google account."
+        accounts: List["ReturnedAccountDto"] = response.parsed
+
+        account_id = ""
+        for account in accounts:
+            if account.source == "google":
+                account_id = account.id
+        if account_id == "":
+            return "The user has not connected their Google account; you should try authenticating Google first."
+        else:
+            response: Response[GoogleParsedThread] = google_controller_parsed_thread.sync_detailed(
+                client=self.client,
+                account_id=account_id,
+                thread_id=parsed_parameters.threadId
+            )
+            if not 200 <= response.status_code < 300:
+                return "Error when attempting to get the user's Google parsed_thread."
+
+            if self.parse_output is None:
+                return json.dumps(response.parsed.to_dict())
+            else:
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -796,21 +952,9 @@ class GoogleGetCalendarsTool(BaseTool):
     name = "Google Get Calendars Tool"
     description = """Useful for when you need to get a user's Google calendars.
     
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the Google API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
     
-    "syncToken" (Optional), string: "The syncToken of the calendars"
-    "showHidden" (Optional), boolean: "Whether to show hidden calendars"
-    "showDeleted" (Optional), boolean: "Whether to show deleted calendars"
-    "pageToken" (Optional), string: "The pageToken of the calendars"
-    
-    If no parameters are provided, pass "No parameters" as the second line.
     Output will be the text response from the Google API.
     """
 
@@ -828,7 +972,6 @@ class GoogleGetCalendarsTool(BaseTool):
             showDeleted: Optional[bool] = Field(description="Whether to show deleted calendars")
             pageToken: Optional[str] = Field(description="The pageToken of the calendars")
             
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object=GoogleGetCalendarsToolInputSchema)
         
@@ -842,7 +985,7 @@ class GoogleGetCalendarsTool(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -874,7 +1017,7 @@ class GoogleGetCalendarsTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed, question)
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -890,18 +1033,9 @@ class GoogleGetCalendarTool(BaseTool):
     name = "Google Get Calendar Tool"
     description = """Useful for when you need to get a user's Google calendar.
     
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the Google API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
     
-    "calendarId" (Required), string: "The id of the calendar"
-    
-    If no parameters are provided, pass "No parameters" as the second line.
     Output will be the text response from the Google API.
     """
 
@@ -916,7 +1050,6 @@ class GoogleGetCalendarTool(BaseTool):
         class GoogleGetCalendarToolInputSchema(BaseModel):
             calendarId: str = Field(description="The id of the calendar")
             
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object=GoogleGetCalendarToolInputSchema)
         
@@ -930,7 +1063,7 @@ class GoogleGetCalendarTool(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -959,7 +1092,7 @@ class GoogleGetCalendarTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed, question)
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -975,30 +1108,9 @@ class GoogleGetEventsTool(BaseTool):
     name = "Google Get Events Tool"
     description = """Useful for when you need to get a user's Google events.
     
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the Google API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
     
-    "iCalUID" (Optional), string: "The iCal UID"
-    "syncToken" (Optional), string: "The sync token"
-    "updatedMin" (Optional), string: "The updated min"
-    "timeZone" (Optional), string: "The time zone"
-    "timeMin" (Optional), string: "The time min"
-    "timeMax" (Optional), string: "The time max"
-    "singleEvents" (Optional), boolean: "Whether to show single events"
-    "showDeleted" (Optional), boolean: "Whether to show deleted"
-    "q" (Optional), string: "The query"
-    "pageToken" (Optional), string: "The page token"
-    "orderBy" (Optional), string: "The order by"
-    "maxAttendees" (Optional), number: "The max attendees"
-    "calendarId" (Optional), string: "The id of the calendar"
-    
-    If no parameters are provided, pass "No parameters" as the second line.
     Output will be the text response from the Google API.
     """
 
@@ -1025,7 +1137,6 @@ class GoogleGetEventsTool(BaseTool):
             maxAttendees: Optional[int] = Field(description="The max attendees")
             calendarId: Optional[str] = Field(description="The id of the calendar")
             
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object=GoogleGetEventsToolInputSchema)
         
@@ -1039,7 +1150,7 @@ class GoogleGetEventsTool(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -1080,7 +1191,7 @@ class GoogleGetEventsTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed, question)
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
@@ -1096,20 +1207,9 @@ class GoogleGetEventTool(BaseTool):
     name = "Google Get Event Tool"
     description = """Useful for when you need to get a user's Google event.
     
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the Google API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
     
-    "timeZone" (Optional), string: "The timeZone of the event"
-    "eventId" (Required), string: "The id of the event"
-    "calendarId" (Required), string: "The calendarId of the calendar which contains the event"
-    
-    If no parameters are provided, pass "No parameters" as the second line.
     Output will be the text response from the Google API.
     """
 
@@ -1126,7 +1226,6 @@ class GoogleGetEventTool(BaseTool):
             eventId: str = Field(description="The id of the event")
             calendarId: str = Field(description="The calendarId of the calendar which contains the event")
             
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object=GoogleGetEventToolInputSchema)
         
@@ -1140,7 +1239,7 @@ class GoogleGetEventTool(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -1171,7 +1270,7 @@ class GoogleGetEventTool(BaseTool):
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
             else:
-                return self.parse_output(response.parsed, question)
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(
