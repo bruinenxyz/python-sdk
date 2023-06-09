@@ -10,10 +10,21 @@ from langchain.agents import initialize_agent
 from langchain.llms import OpenAI
 
 from bruinen.src.bruinen.langchain.github import GithubGetProfileTool, GithubGetReposTool
-from bruinen.src.bruinen.langchain.google import GoogleGetDraftsTool
+from bruinen.src.bruinen.langchain.google import GoogleGetDraftsTool, GoogleAuthenticatorTool
 from bruinen.src.bruinen.client import AuthenticatedClient
 
 client = AuthenticatedClient(base_url='http://localhost:3000', token=bruinen_secret, prefix='', auth_header_name='X-API-Key')
+
+## Authenticator tool example
+
+user_id = '0a40131b-7c8a-4d0b-a2ba-a99e20db31ae'
+
+llm = OpenAI(temperature=0)
+google_auth_tool = GoogleAuthenticatorTool(client=client, user_id=user_id, redirect_url='http://localhost:3000')
+agent = initialize_agent([google_auth_tool], llm, agent='chat-zero-shot-react-description', verbose=True)
+result = agent.run("Authenticate my Google account.")
+
+exit()
 
 ## Google example
 
@@ -28,9 +39,6 @@ def parse_drafts(output, query):
 google_drafts_tool = GoogleGetDraftsTool(client=client, user_id=user_id, llm=input_llm, parse_output=parse_drafts)
 agent = initialize_agent([google_drafts_tool], agent_llm, agent='chat-zero-shot-react-description', verbose=True)
 result = agent.run("What are my Google drafts with q=null and pageToken='1'?")
-print(result)
-
-exit()
 
 ## Github example
 
