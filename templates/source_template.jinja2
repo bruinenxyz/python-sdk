@@ -8,6 +8,7 @@ from langchain.prompts.prompt import PromptTemplate
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
 from typing import Callable, List, Optional
+from urllib.parse import quote
 
 from ..client import AuthenticatedClient
 from ..client.api.accounts import find_all_accounts_for_user
@@ -26,12 +27,14 @@ class {{ authenticator_class_name }}(BaseTool):
     Input to the tool should be an empty string.
 
     The response from the tool will be a URL that you return to the user for them to complete auth.
+    The URL will be your final answer.
     """
-    # Could add: This URL will be your final answer.
 
     client: AuthenticatedClient
-    server: str
     user_id: str
+    server: str = 'https://ui.bruinen.co'
+    source_policy_id: str = None
+    redirect_url: str
 
     def _run(
         self,
@@ -40,9 +43,15 @@ class {{ authenticator_class_name }}(BaseTool):
     ) -> str:
         """Run the tool."""
         response: Response[Auth] = get_user_auth_token.sync_detailed(client=self.client, user_id=self.user_id)
-        auth_token = response.parsed.access_token
-        # TODO decide how this URL should be formatted
-        return self.server + '?userToken=' + auth_token + '&source=google'
+        user_token = response.parsed.access_token
+
+        if self.source_policy_id is not None:
+            source = [{ 'name': '{{ source_name }}', 'sourcePolicyId': self.source_policy_id }]
+        else:
+            source = [{ 'name': '{{ source_name }}' }]
+        encoded_source = quote(json.dumps(source))
+        
+        return self.server + '/connect' + '?userToken=' + quote(user_token) + '&sources=' + encoded_source + '&defaultRedirectUrl=' + quote(self.redirect_url)
 
     # TODO implement async version
     async def _arun(
@@ -58,20 +67,10 @@ class {{ resource.class_name }}(BaseTool):
     name = "{{ resource.tool_name }}"
     description = """{{ resource.tool_description }}
     {% if resource.has_parameters %}
-    The input should be a string with two parts, separated by a new line character '\n'.
-    Always include the '\n' in the input, even if the second line is empty.
-
-    The first line should be the question that you want to know the answer to.
-
-    The second line should be the requested parameters to the {{ source_name.title() }} API, as key/value pairs, separated by commas. 
-    For keys that are not marked as required, if no value is provided, do not include the key.
-    Possible keys for the the second line are:
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.{% else %}
+    Input should be the question that you want to know the answer to.{% endif %}
     
-    {% for parameter in resource.parameters %}"{{ parameter.name }}" ({% if parameter.required %}Required{% else %}Optional{% endif %}), {{ parameter.type }}: "{{ parameter.description }}"
-    {% endfor %}
-    If no parameters are provided, pass "No parameters" as the second line.{% else %}
-    Input should be the question that you want to know the answer to.
-    {% endif %}
     Output will be the text response from the {{ source_name.title() }} API.
     """
 
@@ -86,7 +85,6 @@ class {{ resource.class_name }}(BaseTool):
         {% if resource.has_parameters %}class {{ resource.class_name + "InputSchema" }}(BaseModel):
             {% for parameter in resource.parameters %}{{ parameter.name }}: {% if not parameter.required %}Optional[{% endif %}{{ parameter.python_type }}{% if not parameter.required %}]{% endif %} = Field(description="{{ parameter.description }}")
             {% endfor %}
-        question, raw_parameters = query.split("\n", 1)
         
         parser = PydanticOutputParser(pydantic_object={{ resource.class_name + "InputSchema" }})
         
@@ -100,7 +98,7 @@ class {{ resource.class_name }}(BaseTool):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
-        _input = prompt.format_prompt(query=raw_parameters)
+        _input = prompt.format_prompt(query=query)
         output = self.llm(_input.to_string())
         parsed_parameters = parser.parse(output)
         
@@ -125,13 +123,13 @@ class {{ resource.class_name }}(BaseTool):
                 {% endif %}{% endfor %}{% endif %}
             )
             if not 200 <= response.status_code < 300:
-                return "Error when attempting to {{ resource.type }} the user's {{ source_name.title() }} {{resource.name }}."
+                return "Error when attempting to {{ resource.type }} the user's {{ source_name.title() }} {{ resource.name }}."
 
             if self.parse_output is None:
                 {% if resource.is_array %}# Call each response item's to_dict() method and return the result as a JSON string
                 return json.dumps(list(map(lambda x: x.to_dict(), response.parsed))){% else %}return json.dumps(response.parsed.to_dict()){% endif %}
             else:
-                return self.parse_output(response.parsed, {% if resource.has_parameters %}question{% else %}query{% endif %})
+                return self.parse_output(response.parsed, query)
 
     # TODO implement async version
     async def _arun(

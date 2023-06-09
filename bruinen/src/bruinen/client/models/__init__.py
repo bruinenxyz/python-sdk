@@ -40,6 +40,11 @@ from .google_draft_message_payload_headers_item import GoogleDraftMessagePayload
 from .google_draft_message_payload_parts_item import GoogleDraftMessagePayloadPartsItem
 from .google_draft_message_payload_parts_item_body import GoogleDraftMessagePayloadPartsItemBody
 from .google_draft_message_payload_parts_item_headers_item import GoogleDraftMessagePayloadPartsItemHeadersItem
+from .google_draft_message_payload_parts_item_parts_item import GoogleDraftMessagePayloadPartsItemPartsItem
+from .google_draft_message_payload_parts_item_parts_item_body import GoogleDraftMessagePayloadPartsItemPartsItemBody
+from .google_draft_message_payload_parts_item_parts_item_headers_item import (
+    GoogleDraftMessagePayloadPartsItemPartsItemHeadersItem,
+)
 from .google_drafts import GoogleDrafts
 from .google_drafts_drafts_item import GoogleDraftsDraftsItem
 from .google_drafts_drafts_item_message import GoogleDraftsDraftsItemMessage
@@ -116,6 +121,28 @@ from .google_message_payload_parts_item_body import GoogleMessagePayloadPartsIte
 from .google_message_payload_parts_item_headers_item import GoogleMessagePayloadPartsItemHeadersItem
 from .google_messages import GoogleMessages
 from .google_messages_messages_item import GoogleMessagesMessagesItem
+from .google_parsed_draft import GoogleParsedDraft
+from .google_parsed_draft_attachments_item import GoogleParsedDraftAttachmentsItem
+from .google_parsed_draft_headers import GoogleParsedDraftHeaders
+from .google_parsed_draft_headers_bcc_item import GoogleParsedDraftHeadersBccItem
+from .google_parsed_draft_headers_cc_item import GoogleParsedDraftHeadersCcItem
+from .google_parsed_draft_headers_from import GoogleParsedDraftHeadersFrom
+from .google_parsed_draft_headers_to_item import GoogleParsedDraftHeadersToItem
+from .google_parsed_message import GoogleParsedMessage
+from .google_parsed_message_attachments_item import GoogleParsedMessageAttachmentsItem
+from .google_parsed_message_headers import GoogleParsedMessageHeaders
+from .google_parsed_message_headers_bcc_item import GoogleParsedMessageHeadersBccItem
+from .google_parsed_message_headers_cc_item import GoogleParsedMessageHeadersCcItem
+from .google_parsed_message_headers_from import GoogleParsedMessageHeadersFrom
+from .google_parsed_message_headers_to_item import GoogleParsedMessageHeadersToItem
+from .google_parsed_thread import GoogleParsedThread
+from .google_parsed_thread_messages_item import GoogleParsedThreadMessagesItem
+from .google_parsed_thread_messages_item_attachments_item import GoogleParsedThreadMessagesItemAttachmentsItem
+from .google_parsed_thread_messages_item_headers import GoogleParsedThreadMessagesItemHeaders
+from .google_parsed_thread_messages_item_headers_bcc_item import GoogleParsedThreadMessagesItemHeadersBccItem
+from .google_parsed_thread_messages_item_headers_cc_item import GoogleParsedThreadMessagesItemHeadersCcItem
+from .google_parsed_thread_messages_item_headers_from import GoogleParsedThreadMessagesItemHeadersFrom
+from .google_parsed_thread_messages_item_headers_to_item import GoogleParsedThreadMessagesItemHeadersToItem
 from .google_profile import GoogleProfile
 from .google_thread import GoogleThread
 from .google_thread_messages_item import GoogleThreadMessagesItem
@@ -181,6 +208,9 @@ __all__ = (
     "GoogleDraftMessagePayloadPartsItem",
     "GoogleDraftMessagePayloadPartsItemBody",
     "GoogleDraftMessagePayloadPartsItemHeadersItem",
+    "GoogleDraftMessagePayloadPartsItemPartsItem",
+    "GoogleDraftMessagePayloadPartsItemPartsItemBody",
+    "GoogleDraftMessagePayloadPartsItemPartsItemHeadersItem",
     "GoogleDrafts",
     "GoogleDraftsDraftsItem",
     "GoogleDraftsDraftsItemMessage",
@@ -245,6 +275,28 @@ __all__ = (
     "GoogleMessagePayloadPartsItemHeadersItem",
     "GoogleMessages",
     "GoogleMessagesMessagesItem",
+    "GoogleParsedDraft",
+    "GoogleParsedDraftAttachmentsItem",
+    "GoogleParsedDraftHeaders",
+    "GoogleParsedDraftHeadersBccItem",
+    "GoogleParsedDraftHeadersCcItem",
+    "GoogleParsedDraftHeadersFrom",
+    "GoogleParsedDraftHeadersToItem",
+    "GoogleParsedMessage",
+    "GoogleParsedMessageAttachmentsItem",
+    "GoogleParsedMessageHeaders",
+    "GoogleParsedMessageHeadersBccItem",
+    "GoogleParsedMessageHeadersCcItem",
+    "GoogleParsedMessageHeadersFrom",
+    "GoogleParsedMessageHeadersToItem",
+    "GoogleParsedThread",
+    "GoogleParsedThreadMessagesItem",
+    "GoogleParsedThreadMessagesItemAttachmentsItem",
+    "GoogleParsedThreadMessagesItemHeaders",
+    "GoogleParsedThreadMessagesItemHeadersBccItem",
+    "GoogleParsedThreadMessagesItemHeadersCcItem",
+    "GoogleParsedThreadMessagesItemHeadersFrom",
+    "GoogleParsedThreadMessagesItemHeadersToItem",
     "GoogleProfile",
     "GoogleThread",
     "GoogleThreadMessagesItem",

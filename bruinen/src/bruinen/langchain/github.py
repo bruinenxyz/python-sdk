@@ -8,6 +8,7 @@ from langchain.prompts.prompt import PromptTemplate
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
 from typing import Callable, List, Optional
+from urllib.parse import quote
 
 from ..client import AuthenticatedClient
 from ..client.api.accounts import find_all_accounts_for_user
@@ -28,12 +29,14 @@ class GithubAuthenticatorTool(BaseTool):
     Input to the tool should be an empty string.
 
     The response from the tool will be a URL that you return to the user for them to complete auth.
+    The URL will be your final answer.
     """
-    # Could add: This URL will be your final answer.
 
     client: AuthenticatedClient
-    server: str
     user_id: str
+    server: str = 'https://ui.bruinen.co'
+    source_policy_id: str = None
+    redirect_url: str
 
     def _run(
         self,
@@ -42,9 +45,15 @@ class GithubAuthenticatorTool(BaseTool):
     ) -> str:
         """Run the tool."""
         response: Response[Auth] = get_user_auth_token.sync_detailed(client=self.client, user_id=self.user_id)
-        auth_token = response.parsed.access_token
-        # TODO decide how this URL should be formatted
-        return self.server + '?userToken=' + auth_token + '&source=google'
+        user_token = response.parsed.access_token
+
+        if self.source_policy_id is not None:
+            source = [{ 'name': 'github', 'sourcePolicyId': self.source_policy_id }]
+        else:
+            source = [{ 'name': 'github' }]
+        encoded_source = quote(json.dumps(source))
+        
+        return self.server + '/connect' + '?userToken=' + quote(user_token) + '&sources=' + encoded_source + '&defaultRedirectUrl=' + quote(self.redirect_url)
 
     # TODO implement async version
     async def _arun(
