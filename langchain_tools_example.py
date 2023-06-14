@@ -31,36 +31,36 @@ def parse_parameters(_query: str) -> GoogleGetParsedMessagesTool.input_schema:
         template="""
         Given the provided input query, output a response that adheres to the following syntax:
 
-        If you want to the specify the sender:
+        To the specify the sender:
         from:sender
         Example: from:amy
 
-        If you want to specify a recipient: 
+        To specify a recipient: 
         to:recipient
         Example: to:david
 
-        If you want to specify a recipient who received a cc:
+        To specify a recipient who received a cc:
         cc:recipient
         Example: cc:david
 
-        If you want to specify a recipient who received a bcc:
+        To specify a recipient who received a bcc:
         bcc:recipient
         Example: bcc:david
 
-        If you want to specify words in the subject line:
+        To specify words in the subject line:
         subject:words
         Example: subject:dinner
 
-        If you want to specify messages that match multiple terms:
+        To specify messages that match multiple terms:
         term1 OR term2
         Example: from:amy OR from:david
 
-        If you want to search for an exact word or phrase in the message or subject line:
+        To search for an exact word or phrase in the message or subject line:
         "word or phrase"
         Example: "dinner and movie tonight"
         
         If anything in the input query does not relate to functionality in the above description, do not include it in the response.
-        For example, exlude anything related to page tokens and labels.
+        Exclude anything related to page tokens and labels.
         If no response is necessary for the input query, respond with an empty string.
 
         Here is the input query:
