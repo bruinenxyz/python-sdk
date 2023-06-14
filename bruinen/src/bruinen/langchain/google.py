@@ -20,6 +20,8 @@ from ..client.api.sources import google_controller_profile
 from ..client.models import GoogleProfile
 from ..client.api.sources import google_controller_drafts
 from ..client.models import GoogleDrafts
+from ..client.api.sources import google_controller_parsed_drafts
+from ..client.models import GoogleParsedDrafts
 from ..client.api.sources import google_controller_draft
 from ..client.models import GoogleDraft
 from ..client.api.sources import google_controller_parsed_draft
@@ -30,12 +32,16 @@ from ..client.api.sources import google_controller_label
 from ..client.models import GoogleLabel
 from ..client.api.sources import google_controller_messages
 from ..client.models import GoogleMessages
+from ..client.api.sources import google_controller_parsed_messages
+from ..client.models import GoogleParsedMessages
 from ..client.api.sources import google_controller_message
 from ..client.models import GoogleMessage
 from ..client.api.sources import google_controller_parsed_message
 from ..client.models import GoogleParsedMessage
 from ..client.api.sources import google_controller_threads
 from ..client.models import GoogleThreads
+from ..client.api.sources import google_controller_parsed_threads
+from ..client.models import GoogleParsedThreads
 from ..client.api.sources import google_controller_thread
 from ..client.models import GoogleThread
 from ..client.api.sources import google_controller_parsed_thread
@@ -206,6 +212,83 @@ class GoogleGetDraftsTool(BaseTool):
             )
             if not 200 <= response.status_code < 300:
                 return "Error when attempting to get the user's Google drafts."
+
+            if self.parse_output is None:
+                return json.dumps(response.parsed.to_dict())
+            else:
+                return self.parse_output(response.parsed, query)
+
+    # TODO implement async version
+    async def _arun(
+        self,
+        query: str,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Run the tool asynchronously."""
+        return await self._run(query, run_manager)
+
+
+class GoogleGetParsedDraftsTool(BaseTool):
+    name = "Google Get ParsedDrafts Tool"
+    description = """Useful for when you need to get a user's Google parsed_drafts.
+    
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
+    
+    Output will be the text response from the Google API.
+    """
+
+    client: AuthenticatedClient
+    llm: BaseLanguageModel
+    user_id: str
+    parse_output: Optional[Callable[[GoogleParsedDrafts], str]] = None
+
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+
+        class GoogleGetParsedDraftsToolInputSchema(BaseModel):
+            q: Optional[str] = Field(description="The query for your drafts")
+            pageToken: Optional[str] = Field(description="The page token for your drafts")
+            
+        
+        parser = PydanticOutputParser(pydantic_object=GoogleGetParsedDraftsToolInputSchema)
+        
+        prompt = PromptTemplate(
+            template="""Parse the provided input string.
+            For values that are not marked as required, if no value is provided, return a null value.
+            {format_instructions}
+            Here is the input:
+            {query}""",
+            input_variables=["query"],
+            partial_variables={"format_instructions": parser.get_format_instructions()},
+        )
+
+        _input = prompt.format_prompt(query=query)
+        output = self.llm(_input.to_string())
+        parsed_parameters = parser.parse(output)
+        
+        response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
+            client=self.client, user_id=self.user_id
+        )
+        if not 200 <= response.status_code < 300:
+            return "Error pulling the user's Google account."
+        accounts: List["ReturnedAccountDto"] = response.parsed
+
+        account_id = ""
+        for account in accounts:
+            if account.source == "google":
+                account_id = account.id
+        if account_id == "":
+            return "The user has not connected their Google account; you should try authenticating Google first."
+        else:
+            response: Response[GoogleParsedDrafts] = google_controller_parsed_drafts.sync_detailed(
+                client=self.client,
+                account_id=account_id,
+                q=parsed_parameters.q,
+                page_token=parsed_parameters.pageToken
+            )
+            if not 200 <= response.status_code < 300:
+                return "Error when attempting to get the user's Google parsed_drafts."
 
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
@@ -578,6 +661,96 @@ class GoogleGetMessagesTool(BaseTool):
         return await self._run(query, run_manager)
 
 
+
+
+class GoogleGetParsedMessagesTool(BaseTool):
+    name = "Google Get ParsedMessages Tool"
+    description = """Useful for when you need to get a user's Google parsed_messages.
+    
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
+    
+    Output will be the text response from the Google API.
+    """
+
+    class GoogleGetParsedMessagesToolInputSchema(BaseModel):
+        q: Optional[str] = Field(description="The query of the messages")
+        pageToken: Optional[str] = Field(description="The pageToken of the messages")
+        labelIds: Optional[str] = Field(description="The labelIds of the messages")
+    input_schema = GoogleGetParsedMessagesToolInputSchema
+
+    client: AuthenticatedClient
+    llm: BaseLanguageModel
+    user_id: str
+    parse_parameters: Optional[Callable[[str], GoogleGetParsedMessagesToolInputSchema]] = None
+    parse_output: Optional[Callable[[GoogleParsedMessages], str]] = None
+
+    def _parse_parameters(self, _query: str) -> GoogleGetParsedMessagesToolInputSchema:
+            """Parse the input passed to the tool when running."""
+            parser = PydanticOutputParser(pydantic_object=self.GoogleGetParsedMessagesToolInputSchema)
+            prompt = PromptTemplate(
+                template="""Parse the provided input string.
+                For values that are not marked as required, if no value is provided, return a null value.
+                {format_instructions}
+                Here is the input:
+                {query}""",
+                input_variables=["query"],
+                partial_variables={"format_instructions": parser.get_format_instructions()},
+            )
+            _input = prompt.format_prompt(query=_query)
+            output = self.llm(_input.to_string())
+            return parser.parse(output)
+
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+
+        # If no custom input parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
+        
+        print(parsed_parameters)
+        
+        response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
+            client=self.client, user_id=self.user_id
+        )
+        if not 200 <= response.status_code < 300:
+            return "Error pulling the user's Google account."
+        accounts: List["ReturnedAccountDto"] = response.parsed
+
+        account_id = ""
+        for account in accounts:
+            if account.source == "google":
+                account_id = account.id
+        if account_id == "":
+            return "The user has not connected their Google account; you should try authenticating Google first."
+        else:
+            response: Response[GoogleParsedMessages] = google_controller_parsed_messages.sync_detailed(
+                client=self.client,
+                account_id=account_id,
+                q=parsed_parameters.q,
+                page_token=parsed_parameters.pageToken,
+                label_ids=parsed_parameters.labelIds
+            )
+            if not 200 <= response.status_code < 300:
+                return "Error when attempting to get the user's Google parsed_messages."
+
+            if self.parse_output is None:
+                return json.dumps(response.parsed.to_dict())
+            else:
+                return self.parse_output(response.parsed, query)
+
+    # TODO implement async version
+    async def _arun(
+        self,
+        query: str,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Run the tool asynchronously."""
+        return await self._run(query, run_manager)
+
+
 class GoogleGetMessageTool(BaseTool):
     name = "Google Get Message Tool"
     description = """Useful for when you need to get a user's Google message.
@@ -791,6 +964,85 @@ class GoogleGetThreadsTool(BaseTool):
             )
             if not 200 <= response.status_code < 300:
                 return "Error when attempting to get the user's Google threads."
+
+            if self.parse_output is None:
+                return json.dumps(response.parsed.to_dict())
+            else:
+                return self.parse_output(response.parsed, query)
+
+    # TODO implement async version
+    async def _arun(
+        self,
+        query: str,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Run the tool asynchronously."""
+        return await self._run(query, run_manager)
+
+
+class GoogleGetParsedThreadsTool(BaseTool):
+    name = "Google Get ParsedThreads Tool"
+    description = """Useful for when you need to get a user's Google parsed_threads.
+    
+    Input should be a string containing the question that you want to know the answer to.
+    Do not pass parameters as JSON, instead pass the string to the tool as is.
+    
+    Output will be the text response from the Google API.
+    """
+
+    client: AuthenticatedClient
+    llm: BaseLanguageModel
+    user_id: str
+    parse_output: Optional[Callable[[GoogleParsedThreads], str]] = None
+
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+
+        class GoogleGetParsedThreadsToolInputSchema(BaseModel):
+            q: Optional[str] = Field(description="The query of the threads")
+            pageToken: Optional[str] = Field(description="The pageToken of the threads")
+            labelIds: Optional[str] = Field(description="The labelIds of the threads")
+            
+        
+        parser = PydanticOutputParser(pydantic_object=GoogleGetParsedThreadsToolInputSchema)
+        
+        prompt = PromptTemplate(
+            template="""Parse the provided input string.
+            For values that are not marked as required, if no value is provided, return a null value.
+            {format_instructions}
+            Here is the input:
+            {query}""",
+            input_variables=["query"],
+            partial_variables={"format_instructions": parser.get_format_instructions()},
+        )
+
+        _input = prompt.format_prompt(query=query)
+        output = self.llm(_input.to_string())
+        parsed_parameters = parser.parse(output)
+        
+        response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
+            client=self.client, user_id=self.user_id
+        )
+        if not 200 <= response.status_code < 300:
+            return "Error pulling the user's Google account."
+        accounts: List["ReturnedAccountDto"] = response.parsed
+
+        account_id = ""
+        for account in accounts:
+            if account.source == "google":
+                account_id = account.id
+        if account_id == "":
+            return "The user has not connected their Google account; you should try authenticating Google first."
+        else:
+            response: Response[GoogleParsedThreads] = google_controller_parsed_threads.sync_detailed(
+                client=self.client,
+                account_id=account_id,
+                q=parsed_parameters.q,
+                page_token=parsed_parameters.pageToken,
+                label_ids=parsed_parameters.labelIds
+            )
+            if not 200 <= response.status_code < 300:
+                return "Error when attempting to get the user's Google parsed_threads."
 
             if self.parse_output is None:
                 return json.dumps(response.parsed.to_dict())
