@@ -77,10 +77,10 @@ class GithubGetReposTool(BaseTool):
     client: AuthenticatedClient
     user_id: str
     parse_output: Optional[Callable[[List["GithubRepo"]], str]] = None
-
+    
     def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
         """Run the tool."""
-
+        
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
         )
@@ -130,10 +130,10 @@ class GithubGetProfileTool(BaseTool):
     client: AuthenticatedClient
     user_id: str
     parse_output: Optional[Callable[[GithubProfile], str]] = None
-
+    
     def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
         """Run the tool."""
-
+        
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
         )

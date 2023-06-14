@@ -74,20 +74,20 @@ class {{ resource.class_name }}(BaseTool):
     Output will be the text response from the {{ source_name.title() }} API.
     """
 
-    client: AuthenticatedClient
-    {% if resource.has_parameters %}llm: BaseLanguageModel
-    {% endif %}user_id: str
+    {% if resource.has_parameters %}class {{ resource.class_name + "InputSchema" }}(BaseModel):
+        {% for parameter in resource.parameters %}{{ parameter.name }}: {% if not parameter.required %}Optional[{% endif %}{{ parameter.python_type }}{% if not parameter.required %}]{% endif %} = Field(description="{{ parameter.description }}")
+        {% endfor %}
+    input_schema = {{ resource.class_name + "InputSchema" }}
+
+    {% endif %}client: AuthenticatedClient
+    user_id: str{% if resource.has_parameters %}
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], {{ resource.class_name + "InputSchema" }}]] = None{% endif %}
     parse_output: Optional[Callable[[{% if resource.is_array %}List["{{ resource.output_model_name }}"]{% else %}{{ resource.output_model_name }}{% endif %}], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        {% if resource.has_parameters %}class {{ resource.class_name + "InputSchema" }}(BaseModel):
-            {% for parameter in resource.parameters %}{{ parameter.name }}: {% if not parameter.required %}Optional[{% endif %}{{ parameter.python_type }}{% if not parameter.required %}]{% endif %} = Field(description="{{ parameter.description }}")
-            {% endfor %}
-        
-        parser = PydanticOutputParser(pydantic_object={{ resource.class_name + "InputSchema" }})
-        
+    
+    {% if resource.has_parameters %}def _parse_parameters(self, _query: str) -> {{ resource.class_name + "InputSchema" }}:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.{{ resource.class_name + "InputSchema" }})
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -97,10 +97,20 @@ class {{ resource.class_name }}(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    {% endif %}def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        {% if resource.has_parameters %}# If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         {% endif %}response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id

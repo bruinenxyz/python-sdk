@@ -111,10 +111,10 @@ class GoogleGetProfileTool(BaseTool):
     client: AuthenticatedClient
     user_id: str
     parse_output: Optional[Callable[[GoogleProfile], str]] = None
-
+    
     def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
         """Run the tool."""
-
+        
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
         )
@@ -161,21 +161,21 @@ class GoogleGetDraftsTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetDraftsToolInputSchema(BaseModel):
+        q: Optional[str] = Field(description="The query for your drafts")
+        pageToken: Optional[str] = Field(description="The page token for your drafts")
+        
+    input_schema = GoogleGetDraftsToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetDraftsToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleDrafts], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetDraftsToolInputSchema(BaseModel):
-            q: Optional[str] = Field(description="The query for your drafts")
-            pageToken: Optional[str] = Field(description="The page token for your drafts")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetDraftsToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetDraftsToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetDraftsToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -185,10 +185,20 @@ class GoogleGetDraftsTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -238,21 +248,21 @@ class GoogleGetParsedDraftsTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetParsedDraftsToolInputSchema(BaseModel):
+        q: Optional[str] = Field(description="The query for your drafts")
+        pageToken: Optional[str] = Field(description="The page token for your drafts")
+        
+    input_schema = GoogleGetParsedDraftsToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetParsedDraftsToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleParsedDrafts], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetParsedDraftsToolInputSchema(BaseModel):
-            q: Optional[str] = Field(description="The query for your drafts")
-            pageToken: Optional[str] = Field(description="The page token for your drafts")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetParsedDraftsToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetParsedDraftsToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetParsedDraftsToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -262,10 +272,20 @@ class GoogleGetParsedDraftsTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -315,20 +335,20 @@ class GoogleGetDraftTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetDraftToolInputSchema(BaseModel):
+        draftId: str = Field(description="The id of the draft")
+        
+    input_schema = GoogleGetDraftToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetDraftToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleDraft], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetDraftToolInputSchema(BaseModel):
-            draftId: str = Field(description="The id of the draft")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetDraftToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetDraftToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetDraftToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -338,10 +358,20 @@ class GoogleGetDraftTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -390,20 +420,20 @@ class GoogleGetParsedDraftTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetParsedDraftToolInputSchema(BaseModel):
+        draftId: str = Field(description="The id of the draft")
+        
+    input_schema = GoogleGetParsedDraftToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetParsedDraftToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleParsedDraft], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetParsedDraftToolInputSchema(BaseModel):
-            draftId: str = Field(description="The id of the draft")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetParsedDraftToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetParsedDraftToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetParsedDraftToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -413,10 +443,20 @@ class GoogleGetParsedDraftTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -467,10 +507,10 @@ class GoogleGetLabelsTool(BaseTool):
     client: AuthenticatedClient
     user_id: str
     parse_output: Optional[Callable[[GoogleLabels], str]] = None
-
+    
     def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
         """Run the tool."""
-
+        
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
         )
@@ -517,20 +557,20 @@ class GoogleGetLabelTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetLabelToolInputSchema(BaseModel):
+        labelId: str = Field(description="The id of the label")
+        
+    input_schema = GoogleGetLabelToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetLabelToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleLabel], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetLabelToolInputSchema(BaseModel):
-            labelId: str = Field(description="The id of the label")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetLabelToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetLabelToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetLabelToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -540,10 +580,20 @@ class GoogleGetLabelTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -592,22 +642,22 @@ class GoogleGetMessagesTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetMessagesToolInputSchema(BaseModel):
+        q: Optional[str] = Field(description="The query of the messages")
+        pageToken: Optional[str] = Field(description="The pageToken of the messages")
+        labelIds: Optional[str] = Field(description="The labelIds of the messages")
+        
+    input_schema = GoogleGetMessagesToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetMessagesToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleMessages], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetMessagesToolInputSchema(BaseModel):
-            q: Optional[str] = Field(description="The query of the messages")
-            pageToken: Optional[str] = Field(description="The pageToken of the messages")
-            labelIds: Optional[str] = Field(description="The labelIds of the messages")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetMessagesToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetMessagesToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetMessagesToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -617,10 +667,20 @@ class GoogleGetMessagesTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -661,8 +721,6 @@ class GoogleGetMessagesTool(BaseTool):
         return await self._run(query, run_manager)
 
 
-
-
 class GoogleGetParsedMessagesTool(BaseTool):
     name = "Google Get ParsedMessages Tool"
     description = """Useful for when you need to get a user's Google parsed_messages.
@@ -677,40 +735,41 @@ class GoogleGetParsedMessagesTool(BaseTool):
         q: Optional[str] = Field(description="The query of the messages")
         pageToken: Optional[str] = Field(description="The pageToken of the messages")
         labelIds: Optional[str] = Field(description="The labelIds of the messages")
+        
     input_schema = GoogleGetParsedMessagesToolInputSchema
 
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
     parse_parameters: Optional[Callable[[str], GoogleGetParsedMessagesToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleParsedMessages], str]] = None
-
+    
     def _parse_parameters(self, _query: str) -> GoogleGetParsedMessagesToolInputSchema:
-            """Parse the input passed to the tool when running."""
-            parser = PydanticOutputParser(pydantic_object=self.GoogleGetParsedMessagesToolInputSchema)
-            prompt = PromptTemplate(
-                template="""Parse the provided input string.
-                For values that are not marked as required, if no value is provided, return a null value.
-                {format_instructions}
-                Here is the input:
-                {query}""",
-                input_variables=["query"],
-                partial_variables={"format_instructions": parser.get_format_instructions()},
-            )
-            _input = prompt.format_prompt(query=_query)
-            output = self.llm(_input.to_string())
-            return parser.parse(output)
-
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetParsedMessagesToolInputSchema)
+        prompt = PromptTemplate(
+            template="""Parse the provided input string.
+            For values that are not marked as required, if no value is provided, return a null value.
+            {format_instructions}
+            Here is the input:
+            {query}""",
+            input_variables=["query"],
+            partial_variables={"format_instructions": parser.get_format_instructions()},
+        )
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
+        output = self.llm(_input.to_string())
+        return parser.parse(output)
+    
     def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
         """Run the tool."""
-
-        # If no custom input parser is passed, use the default one
+        
+        # If no custom input parameter parser is passed, use the default one
         if self.parse_parameters is None:
             parsed_parameters = self._parse_parameters(query)
         else: 
             parsed_parameters = self.parse_parameters(query)
-        
-        print(parsed_parameters)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -761,20 +820,20 @@ class GoogleGetMessageTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetMessageToolInputSchema(BaseModel):
+        messageId: str = Field(description="The id of the message")
+        
+    input_schema = GoogleGetMessageToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetMessageToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleMessage], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetMessageToolInputSchema(BaseModel):
-            messageId: str = Field(description="The id of the message")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetMessageToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetMessageToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetMessageToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -784,10 +843,20 @@ class GoogleGetMessageTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -836,20 +905,20 @@ class GoogleGetParsedMessageTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetParsedMessageToolInputSchema(BaseModel):
+        messageId: str = Field(description="The id of the message")
+        
+    input_schema = GoogleGetParsedMessageToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetParsedMessageToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleParsedMessage], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetParsedMessageToolInputSchema(BaseModel):
-            messageId: str = Field(description="The id of the message")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetParsedMessageToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetParsedMessageToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetParsedMessageToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -859,10 +928,20 @@ class GoogleGetParsedMessageTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -911,22 +990,22 @@ class GoogleGetThreadsTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetThreadsToolInputSchema(BaseModel):
+        q: Optional[str] = Field(description="The query of the threads")
+        pageToken: Optional[str] = Field(description="The pageToken of the threads")
+        labelIds: Optional[str] = Field(description="The labelIds of the threads")
+        
+    input_schema = GoogleGetThreadsToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetThreadsToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleThreads], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetThreadsToolInputSchema(BaseModel):
-            q: Optional[str] = Field(description="The query of the threads")
-            pageToken: Optional[str] = Field(description="The pageToken of the threads")
-            labelIds: Optional[str] = Field(description="The labelIds of the threads")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetThreadsToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetThreadsToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetThreadsToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -936,10 +1015,20 @@ class GoogleGetThreadsTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -990,22 +1079,22 @@ class GoogleGetParsedThreadsTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetParsedThreadsToolInputSchema(BaseModel):
+        q: Optional[str] = Field(description="The query of the threads")
+        pageToken: Optional[str] = Field(description="The pageToken of the threads")
+        labelIds: Optional[str] = Field(description="The labelIds of the threads")
+        
+    input_schema = GoogleGetParsedThreadsToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetParsedThreadsToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleParsedThreads], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetParsedThreadsToolInputSchema(BaseModel):
-            q: Optional[str] = Field(description="The query of the threads")
-            pageToken: Optional[str] = Field(description="The pageToken of the threads")
-            labelIds: Optional[str] = Field(description="The labelIds of the threads")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetParsedThreadsToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetParsedThreadsToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetParsedThreadsToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -1015,10 +1104,20 @@ class GoogleGetParsedThreadsTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -1069,20 +1168,20 @@ class GoogleGetThreadTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetThreadToolInputSchema(BaseModel):
+        threadId: str = Field(description="The id of the thread")
+        
+    input_schema = GoogleGetThreadToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetThreadToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleThread], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetThreadToolInputSchema(BaseModel):
-            threadId: str = Field(description="The id of the thread")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetThreadToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetThreadToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetThreadToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -1092,10 +1191,20 @@ class GoogleGetThreadTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -1144,20 +1253,20 @@ class GoogleGetParsedThreadTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetParsedThreadToolInputSchema(BaseModel):
+        threadId: str = Field(description="The id of the thread")
+        
+    input_schema = GoogleGetParsedThreadToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetParsedThreadToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleParsedThread], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetParsedThreadToolInputSchema(BaseModel):
-            threadId: str = Field(description="The id of the thread")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetParsedThreadToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetParsedThreadToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetParsedThreadToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -1167,10 +1276,20 @@ class GoogleGetParsedThreadTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -1219,23 +1338,23 @@ class GoogleGetCalendarsTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetCalendarsToolInputSchema(BaseModel):
+        syncToken: Optional[str] = Field(description="The syncToken of the calendars")
+        showHidden: Optional[bool] = Field(description="Whether to show hidden calendars")
+        showDeleted: Optional[bool] = Field(description="Whether to show deleted calendars")
+        pageToken: Optional[str] = Field(description="The pageToken of the calendars")
+        
+    input_schema = GoogleGetCalendarsToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetCalendarsToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleCalendars], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetCalendarsToolInputSchema(BaseModel):
-            syncToken: Optional[str] = Field(description="The syncToken of the calendars")
-            showHidden: Optional[bool] = Field(description="Whether to show hidden calendars")
-            showDeleted: Optional[bool] = Field(description="Whether to show deleted calendars")
-            pageToken: Optional[str] = Field(description="The pageToken of the calendars")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetCalendarsToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetCalendarsToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetCalendarsToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -1245,10 +1364,20 @@ class GoogleGetCalendarsTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -1300,20 +1429,20 @@ class GoogleGetCalendarTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetCalendarToolInputSchema(BaseModel):
+        calendarId: str = Field(description="The id of the calendar")
+        
+    input_schema = GoogleGetCalendarToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetCalendarToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleCalendar], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetCalendarToolInputSchema(BaseModel):
-            calendarId: str = Field(description="The id of the calendar")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetCalendarToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetCalendarToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetCalendarToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -1323,10 +1452,20 @@ class GoogleGetCalendarTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -1375,32 +1514,32 @@ class GoogleGetEventsTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetEventsToolInputSchema(BaseModel):
+        iCalUID: Optional[str] = Field(description="The iCal UID")
+        syncToken: Optional[str] = Field(description="The sync token")
+        updatedMin: Optional[str] = Field(description="The updated min")
+        timeZone: Optional[str] = Field(description="The time zone")
+        timeMin: Optional[str] = Field(description="The time min")
+        timeMax: Optional[str] = Field(description="The time max")
+        singleEvents: Optional[bool] = Field(description="Whether to show single events")
+        showDeleted: Optional[bool] = Field(description="Whether to show deleted")
+        q: Optional[str] = Field(description="The query")
+        pageToken: Optional[str] = Field(description="The page token")
+        orderBy: Optional[str] = Field(description="The order by")
+        maxAttendees: Optional[int] = Field(description="The max attendees")
+        calendarId: Optional[str] = Field(description="The id of the calendar")
+        
+    input_schema = GoogleGetEventsToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetEventsToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleEvents], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetEventsToolInputSchema(BaseModel):
-            iCalUID: Optional[str] = Field(description="The iCal UID")
-            syncToken: Optional[str] = Field(description="The sync token")
-            updatedMin: Optional[str] = Field(description="The updated min")
-            timeZone: Optional[str] = Field(description="The time zone")
-            timeMin: Optional[str] = Field(description="The time min")
-            timeMax: Optional[str] = Field(description="The time max")
-            singleEvents: Optional[bool] = Field(description="Whether to show single events")
-            showDeleted: Optional[bool] = Field(description="Whether to show deleted")
-            q: Optional[str] = Field(description="The query")
-            pageToken: Optional[str] = Field(description="The page token")
-            orderBy: Optional[str] = Field(description="The order by")
-            maxAttendees: Optional[int] = Field(description="The max attendees")
-            calendarId: Optional[str] = Field(description="The id of the calendar")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetEventsToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetEventsToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetEventsToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -1410,10 +1549,20 @@ class GoogleGetEventsTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
@@ -1474,22 +1623,22 @@ class GoogleGetEventTool(BaseTool):
     Output will be the text response from the Google API.
     """
 
+    class GoogleGetEventToolInputSchema(BaseModel):
+        timeZone: Optional[str] = Field(description="The timeZone of the event")
+        eventId: str = Field(description="The id of the event")
+        calendarId: str = Field(description="The calendarId of the calendar which contains the event")
+        
+    input_schema = GoogleGetEventToolInputSchema
+
     client: AuthenticatedClient
-    llm: BaseLanguageModel
     user_id: str
+    llm: Optional[BaseLanguageModel]
+    parse_parameters: Optional[Callable[[str], GoogleGetEventToolInputSchema]] = None
     parse_output: Optional[Callable[[GoogleEvent], str]] = None
-
-    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """Run the tool."""
-
-        class GoogleGetEventToolInputSchema(BaseModel):
-            timeZone: Optional[str] = Field(description="The timeZone of the event")
-            eventId: str = Field(description="The id of the event")
-            calendarId: str = Field(description="The calendarId of the calendar which contains the event")
-            
-        
-        parser = PydanticOutputParser(pydantic_object=GoogleGetEventToolInputSchema)
-        
+    
+    def _parse_parameters(self, _query: str) -> GoogleGetEventToolInputSchema:
+        """Parse the input passed to the tool when running."""
+        parser = PydanticOutputParser(pydantic_object=self.GoogleGetEventToolInputSchema)
         prompt = PromptTemplate(
             template="""Parse the provided input string.
             For values that are not marked as required, if no value is provided, return a null value.
@@ -1499,10 +1648,20 @@ class GoogleGetEventTool(BaseTool):
             input_variables=["query"],
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
-
-        _input = prompt.format_prompt(query=query)
+        _input = prompt.format_prompt(query=_query)
+        if self.llm is None:
+            return "Error: No language model provided for input parsing."
         output = self.llm(_input.to_string())
-        parsed_parameters = parser.parse(output)
+        return parser.parse(output)
+    
+    def _run(self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        """Run the tool."""
+        
+        # If no custom input parameter parser is passed, use the default one
+        if self.parse_parameters is None:
+            parsed_parameters = self._parse_parameters(query)
+        else: 
+            parsed_parameters = self.parse_parameters(query)
         
         response: Response[List["ReturnedAccountDto"]] = find_all_accounts_for_user.sync_detailed(
             client=self.client, user_id=self.user_id
