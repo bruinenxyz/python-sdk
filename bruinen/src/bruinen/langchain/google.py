@@ -57,7 +57,7 @@ from ..client.models import GoogleEvent
 
 
 class GoogleAuthenticatorTool(BaseTool):
-    name = 'Google Authenticator Tool'
+    name = 'google_authenticator_tool'
     description = """Useful for when a user's Google account is not authenticated.
 
     Input to the tool should be an empty string.
@@ -100,7 +100,7 @@ class GoogleAuthenticatorTool(BaseTool):
 
 
 class GoogleGetProfileTool(BaseTool):
-    name = "Google Get Profile Tool"
+    name = "google_get_profile_tool"
     description = """Useful for when you need to get a user's Google profile.
     
     Input should be the question that you want to know the answer to.
@@ -152,7 +152,7 @@ class GoogleGetProfileTool(BaseTool):
 
 
 class GoogleGetDraftsTool(BaseTool):
-    name = "Google Get Drafts Tool"
+    name = "google_get_drafts_tool"
     description = """Useful for when you need to get a user's Google drafts.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -239,7 +239,7 @@ class GoogleGetDraftsTool(BaseTool):
 
 
 class GoogleGetParsedDraftsTool(BaseTool):
-    name = "Google Get ParsedDrafts Tool"
+    name = "google_get_parsed_drafts_tool"
     description = """Useful for when you need to get a user's Google parsed_drafts.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -326,7 +326,7 @@ class GoogleGetParsedDraftsTool(BaseTool):
 
 
 class GoogleGetDraftTool(BaseTool):
-    name = "Google Get Draft Tool"
+    name = "google_get_draft_tool"
     description = """Useful for when you need to get a user's Google draft.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -411,7 +411,7 @@ class GoogleGetDraftTool(BaseTool):
 
 
 class GoogleGetParsedDraftTool(BaseTool):
-    name = "Google Get ParsedDraft Tool"
+    name = "google_get_parsed_draft_tool"
     description = """Useful for when you need to get a user's Google parsed_draft.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -496,7 +496,7 @@ class GoogleGetParsedDraftTool(BaseTool):
 
 
 class GoogleGetLabelsTool(BaseTool):
-    name = "Google Get Labels Tool"
+    name = "google_get_labels_tool"
     description = """Useful for when you need to get a user's Google labels.
     
     Input should be the question that you want to know the answer to.
@@ -548,7 +548,7 @@ class GoogleGetLabelsTool(BaseTool):
 
 
 class GoogleGetLabelTool(BaseTool):
-    name = "Google Get Label Tool"
+    name = "google_get_label_tool"
     description = """Useful for when you need to get a user's Google label.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -633,7 +633,7 @@ class GoogleGetLabelTool(BaseTool):
 
 
 class GoogleGetMessagesTool(BaseTool):
-    name = "Google Get Messages Tool"
+    name = "google_get_messages_tool"
     description = """Useful for when you need to get a user's Google messages.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -722,7 +722,7 @@ class GoogleGetMessagesTool(BaseTool):
 
 
 class GoogleGetParsedMessagesTool(BaseTool):
-    name = "Google Get ParsedMessages Tool"
+    name = "google_get_parsed_messages_tool"
     description = """Useful for when you need to get a user's Google parsed_messages.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -811,7 +811,7 @@ class GoogleGetParsedMessagesTool(BaseTool):
 
 
 class GoogleGetMessageTool(BaseTool):
-    name = "Google Get Message Tool"
+    name = "google_get_message_tool"
     description = """Useful for when you need to get a user's Google message.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -896,7 +896,7 @@ class GoogleGetMessageTool(BaseTool):
 
 
 class GoogleGetParsedMessageTool(BaseTool):
-    name = "Google Get ParsedMessage Tool"
+    name = "google_get_parsed_message_tool"
     description = """Useful for when you need to get a user's Google parsed_message.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -981,7 +981,7 @@ class GoogleGetParsedMessageTool(BaseTool):
 
 
 class GoogleGetThreadsTool(BaseTool):
-    name = "Google Get Threads Tool"
+    name = "google_get_threads_tool"
     description = """Useful for when you need to get a user's Google threads.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -1070,7 +1070,7 @@ class GoogleGetThreadsTool(BaseTool):
 
 
 class GoogleGetParsedThreadsTool(BaseTool):
-    name = "Google Get ParsedThreads Tool"
+    name = "google_get_parsed_threads_tool"
     description = """Useful for when you need to get a user's Google parsed_threads.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -1159,7 +1159,7 @@ class GoogleGetParsedThreadsTool(BaseTool):
 
 
 class GoogleGetThreadTool(BaseTool):
-    name = "Google Get Thread Tool"
+    name = "google_get_thread_tool"
     description = """Useful for when you need to get a user's Google thread.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -1244,7 +1244,7 @@ class GoogleGetThreadTool(BaseTool):
 
 
 class GoogleGetParsedThreadTool(BaseTool):
-    name = "Google Get ParsedThread Tool"
+    name = "google_get_parsed_thread_tool"
     description = """Useful for when you need to get a user's Google parsed_thread.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -1329,7 +1329,7 @@ class GoogleGetParsedThreadTool(BaseTool):
 
 
 class GoogleGetCalendarsTool(BaseTool):
-    name = "Google Get Calendars Tool"
+    name = "google_get_calendars_tool"
     description = """Useful for when you need to get a user's Google calendars.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -1420,7 +1420,7 @@ class GoogleGetCalendarsTool(BaseTool):
 
 
 class GoogleGetCalendarTool(BaseTool):
-    name = "Google Get Calendar Tool"
+    name = "google_get_calendar_tool"
     description = """Useful for when you need to get a user's Google calendar.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -1505,7 +1505,7 @@ class GoogleGetCalendarTool(BaseTool):
 
 
 class GoogleGetEventsTool(BaseTool):
-    name = "Google Get Events Tool"
+    name = "google_get_events_tool"
     description = """Useful for when you need to get a user's Google events.
     
     Input should be a string containing the question that you want to know the answer to.
@@ -1614,7 +1614,7 @@ class GoogleGetEventsTool(BaseTool):
 
 
 class GoogleGetEventTool(BaseTool):
-    name = "Google Get Event Tool"
+    name = "google_get_event_tool"
     description = """Useful for when you need to get a user's Google event.
     
     Input should be a string containing the question that you want to know the answer to.
