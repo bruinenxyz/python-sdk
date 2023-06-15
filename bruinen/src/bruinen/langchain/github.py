@@ -23,7 +23,7 @@ from ..client.models import GithubProfile
 
 
 class GithubAuthenticatorTool(BaseTool):
-    name = 'Github Authenticator Tool'
+    name = 'github_authenticator_tool'
     description = """Useful for when a user's Github account is not authenticated.
 
     Input to the tool should be an empty string.
@@ -66,7 +66,7 @@ class GithubAuthenticatorTool(BaseTool):
 
 
 class GithubGetReposTool(BaseTool):
-    name = "Github Get Repos Tool"
+    name = "github_get_repos_tool"
     description = """Useful for when you need to get a user's Github repos.
     
     Input should be the question that you want to know the answer to.
@@ -119,7 +119,7 @@ class GithubGetReposTool(BaseTool):
 
 
 class GithubGetProfileTool(BaseTool):
-    name = "Github Get Profile Tool"
+    name = "github_get_profile_tool"
     description = """Useful for when you need to get a user's Github profile.
     
     Input should be the question that you want to know the answer to.

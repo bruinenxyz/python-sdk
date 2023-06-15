@@ -22,7 +22,7 @@ for source in sources:
     source_name = source
     # Create the authenticator tool
     authenticator_class_name = source_name.title() + 'AuthenticatorTool'
-    authenticator_tool_name = source_name.title() + ' Authenticator Tool'
+    authenticator_tool_name = snake_case(authenticator_class_name)
 
     data['source_name'] = source_name
     data['authenticator_class_name'] = authenticator_class_name
@@ -88,7 +88,7 @@ for source in sources:
                     'has_parameters': has_parameters,
                     'parameters': resource_parameters,
                     'class_name': source_name.title() + resource_method.title() + pascal_case_resource_name + 'Tool',
-                    'tool_name': source_name.title() + ' ' + resource_method.title() + ' ' + pascal_case_resource_name + ' Tool',
+                    'tool_name': snake_case(source_name.title() + resource_method.title() + pascal_case_resource_name + 'Tool'),
                     'tool_description': resource_description,
                     'output_model_name': output_model_name,
                     'is_array': is_array,

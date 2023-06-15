@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bruinen"
-version = "1.2"
+version = "1.2.1"
 description = "A client library for accessing Bruinen API"
 authors = []
 readme = "README.md"
